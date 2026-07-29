@@ -1,554 +1,865 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>⚡CSID.PRO⚡ - Supreme Eternal V536</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CSID.PRO - Sistem Terintegrasi</title>
     
-    <!-- Assets -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Library OCR Tesseract.js -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    
+    <!-- Google Fonts JetBrains Mono & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK v10 Compat (Mencegah Crash Modul di WebView Android) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+
+    <!-- React dan Babel Standalone -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@500;700&display=swap');
-
-        :root {
-            --neon-cyan: #00e5ff;
-            --bg-canvas: #d1d9e6;
-            --kb-height: 18px; 
-            --deep-black: #000000;
-            --wa-green: #2ecc71;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; outline: none; }
-        html, body { width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: 'Inter', sans-serif; }
-        
-        .app-container { width: 100vw; height: 100dvh; background-color: var(--bg-canvas); display: flex; justify-content: center; align-items: center; position: relative; }
-        @media (min-width: 450px) { .mobile-frame { width: 420px; height: 850px; border: 12px solid #1e293b; border-radius: 50px; box-shadow: 0 0 120px rgba(0,0,0,1); position: relative; overflow: hidden; background-color: #fff; } }
-        @media (max-width: 449px) { .mobile-frame { width: 100%; height: 100%; position: relative; overflow: hidden; background-color: #fff; } }
-
-        .page { position: absolute; inset: 0; width: 100%; height: 100%; display: none; flex-direction: column; z-index: 100; overflow: hidden; background-color: #fff; }
-        .page.active { display: flex !important; }
-
-        /* --- HALAMAN 1: LOGIN UI --- */
-        .login-wrapper { padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: #f1f5f9; }
-        .welcome-title { font-size: 16px; font-weight: 900; text-align: center; color: #1e293b; text-transform: uppercase; margin-bottom: 25px; line-height: 1.2; }
-        .login-card-main { background: #ffffff; border-radius: 45px; padding: 40px 25px; width: 100%; max-width: 350px; text-align: center; border: 6px solid var(--neon-cyan); box-shadow: 0 20px 40px rgba(0,0,0,0.05); position: relative; cursor: pointer; transition: 0.2s; }
-        .logo-area h1 { font-size: 26px; font-weight: 900; color: #1e293b; letter-spacing: -0.5px; }
-        .subtitle-access { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 30px; }
-        .dots-container { width: 100%; height: 40px; margin-bottom: 35px; display: flex; justify-content: center; align-items: center; gap: 12px; }
-        .dot { width: 14px; height: 14px; border-radius: 50%; background: #e2e8f0; transition: 0.2s; border: 1.5px solid rgba(0,0,0,0.03); }
-        .dot.active { background: #1e293b; transform: scale(1.2); box-shadow: 0 0 10px var(--neon-cyan); border: 2px solid var(--neon-cyan); }
-        #pinInput { position: absolute; opacity: 0; left: -9999px; width: 1px; height: 1px; }
-
-        .btn-black-login { background: #000; color: #fff; border-radius: 18px; padding: 18px; width: 100%; font-weight: 900; font-size: 11px; text-transform: uppercase; border: none; cursor: pointer; letter-spacing: 1px; margin-bottom: 20px; box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-        .reg-dashed-container { border: 2.5px dashed #cbd5e1; border-radius: 25px; padding: 20px; width: 100%; position: relative; margin-top: 10px; }
-        .reg-label { font-size: 11px; font-weight: 800; color: #334155; text-transform: uppercase; line-height: 1.3; margin-bottom: 15px; }
-        .code-display-box { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
-        .code-number { font-size: 38px; font-weight: 900; color: #2ecc71; letter-spacing: 5px; font-family: 'Roboto Mono', monospace; }
-        .btn-green-reg { background: #2ecc71; color: #fff; border-radius: 15px; padding: 15px; width: 100%; font-weight: 900; font-size: 13px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; cursor: pointer; }
-
-        /* --- HALAMAN 2: SEARCH ENGINE --- */
-        .search-bar-container { background: #000; border: 4px solid var(--neon-cyan); border-radius: 18px; margin: 15px; padding: 18px 14px; display: flex; align-items: center; box-shadow: 0 0 15px rgba(0, 229, 255, 0.3); min-height: 85px; position: relative; overflow: hidden; }
-        .marquee-container { position: absolute; left: 0; right: 0; pointer-events: none; overflow: hidden; display: flex; align-items: center; }
-        .marquee-text { white-space: nowrap; color: var(--neon-cyan); font-weight: 900; font-size: 12px; text-transform: uppercase; animation: marquee-move 10s linear infinite; padding-left: 100%; text-shadow: 0 0 8px var(--neon-cyan); font-family: 'Roboto Mono', monospace; }
-        @keyframes marquee-move { 0% { transform: translateX(0); } 100% { transform: translateX(-200%); } }
-        #plateDisplay { flex: 1; background: transparent; border: none; color: var(--neon-cyan); font-size: 1.25rem; font-weight: 900; font-family: 'Roboto Mono', monospace; text-align: center; outline: none; letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 2; width: 100%; }
-        
-        .action-bar-hybrid { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; gap: 4px; width: 100%; }
-        .btn-cyan-square { background-color: var(--neon-cyan); border: 3.5px solid #000; border-radius: 14px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; box-shadow: 3px 3px 0 #000; color: #000; cursor: pointer; transition: 0.1s; }
-        .btn-cyan-square:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #000; }
-        .btn-search-black { background-color: #000; border: 3.5px solid #000; border-radius: 14px; flex: 1.5; height: 44px; display: flex; align-items: center; justify-content: center; box-shadow: 3px 3px 0 #000; color: var(--neon-cyan); cursor: pointer; }
-
-        /* --- HALAMAN 3: RESULT --- */
-        .result-page-container { background: #ffffff; flex: 1; overflow-y: auto; width: 100%; }
-        .official-card-full { width: 100%; padding: 25px 20px 100px 20px; color: #000; }
-        .brand-header-text { font-size: 14px; font-weight: 900; text-align: center; margin-bottom: 25px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .section-header-supreme { font-size: 15px; font-weight: 900; color: #000; margin: 25px 0 12px 0; display: flex; align-items: center; gap: 10px; text-transform: uppercase; border-bottom: 2.5px solid var(--neon-cyan); padding-bottom: 5px; }
-        .row-supreme { display: flex; align-items: flex-start; margin-bottom: 3px; font-family: 'Roboto Mono', monospace; font-size: 13.5px; line-height: 1.3; }
-        .label-supreme { width: 110px; font-weight: 700; flex-shrink: 0; text-transform: uppercase; display: flex; justify-content: space-between; }
-        .label-supreme::after { content: ":"; margin-right: 8px; font-weight: 900; }
-        .val-supreme { flex: 1; font-weight: 800; text-transform: uppercase; word-break: break-all; }
-        .note-block { font-size: 11.5px; font-weight: 800; color: #000; margin-top: 30px; line-height: 1.5; text-transform: uppercase; border-top: 1px solid #eee; padding-top: 15px; }
-        .cp-link-block { margin-top: 20px; font-family: 'Roboto Mono', monospace; font-size: 13.5px; font-weight: 900; text-transform: uppercase; }
-
-        /* --- HALAMAN 4: ADMIN --- */
-        .admin-page-content { padding: 15px; background: #f8fafc; flex: 1; overflow-y: auto; }
-        .agent-card-supreme { background: #ffffff; border: 3px solid #000; border-radius: 20px; padding: 15px; margin-bottom: 12px; box-shadow: 4px 4px 0 #000; position: relative; }
-        .pin-text-supreme { font-size: 16px; font-weight: 900; color: #000; }
-        .countdown-admin { font-size: 10px; font-weight: 900; color: #ef4444; background: #fee2e2; padding: 4px 8px; border-radius: 8px; display: inline-block; margin-top: 8px; font-family: 'Roboto Mono', monospace; }
-        .status-badge-supreme { position: absolute; top: 15px; right: 15px; background: #000; padding: 3px 10px; border-radius: 6px; font-size: 9px; font-weight: 900; color: #fff; text-transform: uppercase; border: 1.5px solid var(--neon-cyan); }
-        .action-row-supreme { display: flex; align-items: center; gap: 5px; margin-top: 15px; }
-        .btn-buka-supreme { flex: 3; background: #1e293b; color: white; padding: 14px; border-radius: 14px; font-weight: 900; font-size: 13px; text-transform: uppercase; border: 3px solid #000; cursor: pointer; box-shadow: 2px 2px 0 #000; display: flex; align-items: center; justify-content: center; }
-        .btn-blue-icon { background: #3b82f6; color: white; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2.5px solid #000; cursor: pointer; box-shadow: 2px 2px 0 #000; }
-        .btn-reset-icon { background: #eab308; color: white; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2.5px solid #000; cursor: pointer; box-shadow: 2px 2px 0 #000; }
-        .btn-red-icon { background: #fee2e2; color: #ef4444; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2.5px solid #000; cursor: pointer; box-shadow: 2px 2px 0 #000; }
-
-        /* --- LOADER --- */
-        #global-loader { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .loader-supreme-box { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; }
-        .ring-neon { position: absolute; inset: 0; border: 5px solid transparent; border-top-color: var(--neon-cyan); border-radius: 50%; animation: spin-turbo 0.6s linear infinite; box-shadow: 0 0 15px var(--neon-cyan); }
-        .turbo-text { color: var(--neon-cyan); font-weight: 900; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-top: 30px; animation: blink 1s infinite; }
-        
-        @keyframes spin-turbo { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-        /* KEYBOARD */
-        .kb-container { background: #b0b8c4; padding: 8px 8px 38px 8px; display: flex; flex-direction: column; gap: 4px; border-top: 3.5px solid #1e293b; position: relative; z-index: 110; }
-        .kb-row { display: flex; justify-content: center; gap: 3px; width: 100%; }
-        .kb-btn { background: var(--neon-cyan); border: 2.2px solid #000; border-radius: 8px; padding: var(--kb-height) 0; flex: 1; font-weight: 900; color: #000; font-size: 18px; box-shadow: 0 3.5px 0 #000; text-align: center; cursor: pointer; }
-
-        /* MODALS */
-        .modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 25px; }
-        .modal-card { background: #fff; border-radius: 35px; padding: 30px; width: 100%; max-width: 350px; text-align: center; border: 4px solid #000; box-shadow: 10px 10px 0 var(--neon-cyan); }
+        :root { --brand-primary: #f97316; --bg-dark: #000000; }
+        body { background-color: var(--bg-dark); margin: 0; padding: 0; font-family: 'Inter', sans-serif; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; -webkit-tap-highlight-color: transparent; }
+        @keyframes scrollText { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .animate-marquee { display: inline-block; white-space: nowrap; animation: scrollText 20s linear infinite; }
+        .key-press-effect:active { background-color: #ffffff !important; color: #000000 !important; transform: scale(0.95); transition: all 0.1s ease; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .text-glow { text-shadow: 0 0 20px rgba(249, 115, 22, 0.6); }
+        .mobile-shell { width: 100%; max-width: 430px; height: 100%; max-height: 932px; background: black; position: relative; display: flex; flex-direction: column; overflow: hidden; }
+        @media (min-width: 640px) { .mobile-shell { border: 1px solid rgba(255,255,255,0.1); border-radius: 3.5rem; box-shadow: 0 0 150px rgba(0,0,0,1); } }
+        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .font-mono-custom { font-family: 'JetBrains Mono', monospace; -webkit-user-select: text !important; user-select: text !important; }
+        .shimmer { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); background-size: 200% 100%; animation: shimmer 2s infinite; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        .camera-video { width: 100%; height: 100%; object-fit: cover; }
+        .scan-guide { border: 3px solid rgba(249, 115, 22, 0.7); box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.65); }
+        @media print { body { display: none !important; } }
+        /* Turbo Spin Loader Optimization */
+        .turbo-spin { animation: spin 0.45s linear infinite !important; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+    <div id="root" class="w-full h-full flex items-center justify-center"></div>
 
-    <div class="app-container">
-        <div class="mobile-frame">
-            
-            <!-- HALAMAN 1: LOGIN -->
-            <div id="pageLogin" class="page active">
-                <div class="login-wrapper">
-                    <h2 class="welcome-title">SELAMAT DATANG DI APLIKASI<br>CEK SAMSAT INDONESIA</h2>
-                    <div class="login-card-main" id="loginCardArea">
-                        <div class="logo-area"><h1>⚡CSID.PRO⚡</h1></div>
-                        <p class="subtitle-access">MASUKKAN PIN AKSES</p>
-                        <div class="dots-container" id="dotBox">
-                            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-                            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-                        </div>
-                        <button type="button" id="loginBtnTrigger" class="btn-black-login">MASUK APLIKASI</button>
-                        <div class="reg-dashed-container">
-                            <i data-lucide="edit-3" size="14" style="position:absolute;top:15px;left:15px;color:#64748b"></i>
-                            <p class="reg-label">KLIK WHATSAPP UNTUK<br>AKTIFKAN KODE PIN 👇</p>
-                            <div class="code-display-box"><span id="idInputDisplay" class="code-number">------</span></div>
-                            <button type="button" id="waRegBtn" class="btn-green-reg"><i class="fab fa-whatsapp text-xl"></i> DAFTAR VIA WHATSAPP</button>
-                            <i data-lucide="hand" size="14" style="position:absolute;top:38px;right:15px;color:#fbc02d"></i>
-                        </div>
-                    </div>
-                    <input type="number" id="pinInput" maxlength="6" inputmode="numeric">
-                </div>
-            </div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-            <!-- HALAMAN 2: SEARCH -->
-            <div id="pageSearch" class="page">
-                <div class="app-header-nav bg-[#1e293b] p-5 border-b-4 border-[#00e5ff] text-white flex items-center justify-between">
-                    <div class="flex items-center gap-2"><i data-lucide="shield-alert" size="14" class="text-cyan-400"></i><h2 class="text-[9.2px] font-black uppercase tracking-wider">⚡CSID.PRO⚡</h2></div>
-                    <div class="text-right"><p id="uName" class="text-[8px] font-black">PIN : -</p><p id="uExp" class="text-[8px] font-black text-cyan-400 tracking-tighter">EXP: --:--:--</p></div>
-                </div>
-                <div class="search-bar-container">
-                    <div class="marquee-container" id="marqueeHint"><div class="marquee-text">KETIK NO. PLAT / NO. MESIN / NO. RANGKA | KETIK NO. PLAT / NO. MESIN / NO. RANGKA</div></div>
-                    <input type="text" id="plateDisplay" inputmode="none">
-                </div>
-                <div class="flex-1 flex flex-col justify-center px-6 text-center"><p class="text-[11.5px] font-black text-red-600 animate-pulse uppercase tracking-wider leading-relaxed mb-4">WARNING ⚠️<br>PENGGUNAAN TANPA IZIN AKAN DITINDAK LANJUTI OLEH TIM CSID.PRO</p></div>
-                
-                <div class="action-bar-hybrid">
-                    <button id="kbMinus" class="btn-cyan-square"><i data-lucide="minus" size="20"></i></button>
-                    <button id="kbPlus" class="btn-cyan-square"><i data-lucide="plus" size="20"></i></button>
-                    <button id="camBtn" class="btn-cyan-square"><i data-lucide="camera" size="20"></i></button>
-                    <input type="file" id="camInput" accept="image/*" capture="environment" class="hidden">
-                    <button id="pasteBtn" class="btn-cyan-square"><i data-lucide="clipboard-list" size="20"></i></button>
-                    <button id="adminNavBtn" class="hidden btn-cyan-square"><i data-lucide="shield-check" size="20"></i></button>
-                    <button id="logoutBtn" class="btn-cyan-square"><i data-lucide="power" size="20" class="text-red-600"></i></button>
-                    <button id="searchBtn" class="btn-search-black"><i data-lucide="search" size="22"></i></button>
-                </div>
-                <div class="kb-container" id="kbBox"></div>
-            </div>
+        const MASTER_PIN = "280189"; 
+        const ADMIN_WA = "628136900872";
+        const APP_ID = 'csid-intelligence-pro';
+        
+        // DOUBLE API KEY SAMSAT NASIONAL
+        const API_UTAMA_1 = "http://36.93.152.242/main/h_api_tnkb.php?q=";
+        const API_UTAMA_2 = "http://202.155.143.156/backend/search?q=";
+        const API_UTAMA_3 = "https://suryamedha.com/tnkb/cek_tnkb.php?kunci=4e61cbab61d60ff80312a3e37dfe6c27&cari=";
 
-            <!-- HALAMAN 3: RESULT -->
-            <div id="pageResult" class="page">
-                <div class="bg-[#1e293b] p-5 border-b-4 border-[#00e5ff] flex items-center text-white">
-                    <button id="backSearchBtn"><i data-lucide="arrow-left"></i></button><span class="flex-1 text-center font-black uppercase text-[10px] tracking-[0.4em]">⚡CSID.PRO⚡</span>
-                </div>
-                <div id="resultArea" class="result-page-container"></div>
-                <div class="p-5 bg-white border-t-4 border-slate-100 flex flex-col gap-3">
-                    <button id="copyBtn" class="w-full bg-slate-100 text-black py-4 rounded-2xl font-black text-[11px] uppercase border-2 border-black">SALIN DATA LAPORAN</button>
-                    <button id="waShareBtn" class="btn-green-reg" style="background:#2ecc71; border-radius:20px; box-shadow: 0 5px 0 #27ae60;"><i class="fab fa-whatsapp text-2xl"></i> KIRIM KE WHATSAPP</button>
-                </div>
-            </div>
 
-            <!-- HALAMAN 4: ADMIN -->
-            <div id="pageAdmin" class="page bg-[#f1f5f9]">
-                <div class="bg-[#1e293b] p-6 border-b-4 border-black flex items-center justify-between text-white">
-                    <div class="flex items-center gap-3"><button id="refreshAdminBtn"><i data-lucide="refresh-cw" size="18" class="text-cyan-400"></i></button><h2 class="font-black text-[11px] uppercase">PANEL KHUSUS ⚡CSID.PRO⚡</h2></div>
-                    <button id="closeAdminBtn"><i data-lucide="x"></i></button>
-                </div>
-                <div class="admin-page-content">
-                    <div class="admin-stats-grid grid grid-cols-2 gap-3 mb-4">
-                        <div class="stat-card-elite bg-white border-2 border-black rounded-2xl p-4 text-center">
-                            <div id="statTotal" class="text-2xl font-black">0</div>
-                            <div class="text-[9px] font-black text-slate-400 uppercase">Total Agent</div>
-                        </div>
-                        <div class="stat-card-elite bg-white border-2 border-black rounded-2xl p-4 text-center">
-                            <div id="statActive" class="text-2xl font-black text-green-600">0</div>
-                            <div class="text-[9px] font-black text-slate-400 uppercase">Aktif</div>
-                        </div>
-                    </div>
-                    <button id="addNewPinBtn" class="w-full bg-[#00e5ff] border-4 border-black p-5 rounded-2xl font-black text-xs mb-6 shadow-[4px_4px_0_#000]">BUAT PIN BARU</button>
-                    <input type="number" id="adminSearchInput" placeholder="Cari PIN..." class="w-full p-4 border-4 border-black rounded-xl mb-4 font-bold">
-                    <div id="agList" class="space-y-4 pb-4 border-b-2 border-slate-300"></div>
-                    <div class="mt-6 mb-10">
-                        <div class="flex items-center justify-between mb-3 px-1"><h3 class="font-black text-[10px] uppercase flex items-center gap-2"><i data-lucide="history" size="12"></i> RIWAYAT MONITORING</h3><button id="clearLogBtn" style="background:#fee2e2; color:#ef4444; border:1px solid #ef4444; border-radius:8px; padding:4px 8px; font-size:8px; font-weight:900;">HAPUS LOG</button></div>
-                        <div id="logArea" class="log-container"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MODAL LOADER SUPREME -->
-            <div id="global-loader">
-                <div class="loader-supreme-box"><div class="ring-neon"></div><i data-lucide="zap" class="text-cyan-400 fill-cyan-400" size="40"></i></div>
-                <p class="turbo-text">SEDANG MENCARI DATA...</p>
-            </div>
-
-            <!-- MODALS -->
-            <div id="modalAlert" class="modal-overlay"><div class="modal-card"><h3 id="alertTitle" class="font-black uppercase text-lg"></h3><p id="alertBody" class="font-bold my-6 text-slate-500 text-sm"></p><button type="button" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black text-xs" id="closeAlertBtn">OKE</button></div></div>
-            <div id="modalRenewPin" class="modal-overlay"><div class="modal-card"><h3 class="font-black mb-2 uppercase">PERPANJANG PIN</h3><p id="renewTargetLabel" class="text-[10px] font-bold text-blue-600 mb-6 uppercase">PIN: ----</p>
-                <select id="renewChoice" class="w-full p-4 border-2 border-slate-200 rounded-xl mb-6 font-black bg-slate-50">
-                    <option value="0.04167">1 JAM</option><option value="1">1 HARI</option><option value="2">2 HARI</option><option value="7">1 MINGGU</option><option value="15">15 HARI</option><option value="30" selected>30 HARI</option><option value="60">2 BULAN</option><option value="90">3 BULAN</option><option value="180">6 BULAN</option><option value="365">1 TAHUN</option>
-                </select>
-                <div class="flex gap-3"><button id="cancelRenewBtn" class="flex-1 bg-slate-100 py-4 rounded-xl font-black text-xs">BATAL</button><button id="confirmRenewBtn" class="flex-1 bg-blue-500 text-white py-4 rounded-xl font-black text-xs border-2 border-black">KONFIRMASI</button></div>
-            </div></div>
-            <div id="modalAddPin" class="modal-overlay"><div class="modal-card"><h3 class="font-black mb-4 uppercase">AKTIFKAN PIN BARU</h3><input type="number" id="newPinVal" placeholder="6 DIGIT PIN" class="w-full p-4 border-2 border-slate-200 rounded-xl mb-4 font-black text-center text-xl">
-                <select id="expiryChoice" class="w-full p-4 border-2 border-slate-200 rounded-xl mb-6 font-black bg-slate-50">
-                    <option value="0.04167">1 JAM</option><option value="1">1 HARI</option><option value="2">2 HARI</option><option value="7">1 MINGGU</option><option value="15">15 HARI</option><option value="30" selected>30 HARI</option><option value="60">2 BULAN</option><option value="90">3 BULAN</option><option value="180">6 BULAN</option><option value="365">1 TAHUN</option>
-                </select>
-                <div class="flex gap-3"><button id="cancelAddBtn" class="flex-1 bg-slate-100 py-4 rounded-xl font-black text-xs">BATAL</button><button id="confirmAddBtn" class="flex-1 bg-cyan-400 py-4 rounded-xl font-black text-xs border-2 border-black">SIMPAN</button></div>
-            </div></div>
-
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, onSnapshot, deleteDoc, updateDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const apiKey = ""; 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'csid-supreme-v536';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // Global State - APK Ready
-        window.titanState = { 
-            isAdmin: false, 
-            currentReportData: null, 
-            allAgents: [], 
-            renewTarget: null, 
-            countdownInterval: null, 
-            registrationCode: null, 
-            currentAgentId: null,
-            isAuthCompleted: false,
-            adminUnsubscribe: null
-        };
-
-        const showL = (m) => { if(m) document.querySelector('.turbo-text').innerText = m; document.getElementById('global-loader').style.display = 'flex'; };
-        const hideL = () => { document.getElementById('global-loader').style.display = 'none'; };
-        const showM = (t, b) => { document.getElementById('alertTitle').innerText = t; document.getElementById('alertBody').innerText = b; document.getElementById('modalAlert').style.display = 'flex'; };
-        const safeSwitch = (id) => { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); lucide.createIcons(); };
-        const getDevID = () => btoa(navigator.userAgent + screen.width + screen.height + navigator.language).slice(0, 48);
-
-        // --- DATABASE LOGGING ---
-        const addSystemLog = async (type, msg) => {
-            if(!auth.currentUser) return;
-            try { await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'logs'), { type, message: msg, timestamp: serverTimestamp() }); } catch (e) {}
-        };
-
-        const getRemainingTimeText = (expiryDate) => {
-            if(!expiryDate) return "N/A";
-            const diff = new Date(expiryDate).getTime() - new Date().getTime();
-            if (diff <= 0) return "EXPIRED";
-            const d = Math.floor(diff / 86400000);
-            const h = Math.floor((diff % 86400000) / 3600000);
-            const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-            return `${d}d ${h}h ${m}m ${s}s`;
-        };
-
-        const startCountdown = (expiryDate) => {
-            if (window.titanState.countdownInterval) clearInterval(window.titanState.countdownInterval);
-            const update = () => {
-                const diff = new Date(expiryDate).getTime() - new Date().getTime();
-                if (diff <= 0) {
-                    document.getElementById('uExp').innerText = "EXPIRED";
-                    document.getElementById('uExp').className = 'text-[8px] font-black text-red-500 tracking-tighter';
-                    if(!window.titanState.isAdmin) {
-                        signOut(auth).then(() => {
-                            showM("EXPIRED", "Akses Anda telah habis. Mohon hubungi admin.");
-                            safeSwitch('pageLogin');
-                        });
-                    }
-                    return clearInterval(window.titanState.countdownInterval);
-                }
-                document.getElementById('uExp').innerText = `EXP: ${getRemainingTimeText(expiryDate)}`;
-            };
-            update(); window.titanState.countdownInterval = setInterval(update, 1000);
-        };
-
-        // --- SEARCH ENGINE ---
-        const doSearch = async () => {
-            const inputEl = document.getElementById('plateDisplay');
-            const queryText = inputEl.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-            if (queryText.length < 3) return;
-            showL("MENCARI DATA...");
-            try {
-                const res = await fetch(`https://elangninja.space/?key=9611bbce88d6dbd96cdfd83619233efb&s=${queryText}`);
-                const data = await res.json();
-                const result = Array.isArray(data) ? data[0] : (data.data ? (Array.isArray(data.data) ? data.data[0] : data.data) : data);
-                if (result && (result.owner_name || result.plate_number)) { 
-                    window.titanState.currentReportData = result;
-                    renderResult(result); 
-                } else { showM("TIADA HASIL", "Data tidak ditemukan di database."); }
-            } catch (e) { showM("ERROR", "Gagal menghubungi satelit."); }
-            hideL();
-        };
-
-        const formatDataForOutput = (v) => {
-            const finalPlate = v.plate_number || v.nopol || document.getElementById('plateDisplay').value;
-            const f = (label, val) => `${label.padEnd(11, ' ')} : ${val || '-'}`;
-            return `SUMBER APLIKASI ⚡CSID.PRO⚡\n\nDATA KEPEMILIKAN 👥\n${f("NO.PLAT", finalPlate)}\n${f("PEMILIK", v.owner_name)}\n${f("ALAMAT", v.owner_address)}\n${f("NIK", v.nik)}\n${f("PEKERJAAN", v.owner_job || 'WIRASWASTA')}\n\nDATA KENDARAAN 🚘\n${f("MEREK", v.brand)}\n${f("TIPE", v.vehicle_type)}\n${f("TAHUN", v.manufacture_year)}\n${f("WARNA", v.color)}\n${f("SILINDER", (v.engine_capacity_cc || '1329.000') + ' cc')}\n${f("RODA", v.wheel_count || '4')}\n${f("NO.RANGKA", v.chassis_number)}\n${f("NO.MESIN", v.engine_number)}\n\nDOKUMEN KEPEMILIKAN 📒\n${f("NO.BPKB", v.bpkb_number || '-')}\n${f("NO.STNK", v.stnk_number || '-')}\n${f("TGL.DAFTAR", v.registration_date || '-')}\n\nNOTE :\nAPLIKASI INI DI BUAT UNTUK MENGAKSES IDENTITAS RESMI KEPEMILIKAN KENDARAAN YANG SAH SESUAI TNKB RESMI PADA KENDARAAN.\n\nCP Link : https://wa.me/628136900872`;
-        };
-
-        const renderResult = (v) => {
-            const area = document.getElementById('resultArea');
-            const finalPlate = v.plate_number || v.nopol || document.getElementById('plateDisplay').value;
-            const row = (l, val) => `<div class="row-supreme"><div class="label-supreme"><span>${l}</span></div><div class="val-supreme">${val || "-"}</div></div>`;
-            area.innerHTML = `<div class="official-card-full"><div class="brand-header-text uppercase">SUMBER APLIKASI ⚡CSID.PRO⚡</div><div class="section-header-supreme">DATA KEPEMILIKAN 👥</div>${row("NO.PLAT", finalPlate)}${row("PEMILIK", v.owner_name)}${row("ALAMAT", v.owner_address)}${row("NIK", v.nik)}${row("PEKERJAAN", v.owner_job || 'WIRASWASTA')}<div class="section-header-supreme">DATA KENDARAAN 🚘</div>${row("MEREK", v.brand)}${row("TIPE", v.vehicle_type)}${row("TAHUN", v.manufacture_year)}${row("WARNA", v.color)}${row("SILINDER", (v.engine_capacity_cc || '1329.000') + ' cc')}${row("RODA", v.wheel_count || '4')}${row("NO.RANGKA", v.chassis_number)}${row("NO.MESIN", v.engine_number)}<div class="section-header-supreme">DOKUMEN KEPEMILIKAN 📒</div>${row("NO.BPKB", v.bpkb_number)}${row("NO.STNK", v.stnk_number)}${row("TGL.DAFTAR", v.registration_date)}<div class="note-block"><strong>NOTE :</strong><br>APLIKASI INI DI BUAT UNTUK MENGAKSES IDENTITAS RESMI KEPEMILIKAN KENDARAAN YANG SAH SESUAI TNKB RESMI PADA KENDARAAN.</div><div class="cp-link-block">CP Link : <a href="https://wa.me/628136900872" target="_blank" style="color:#2563eb">https://wa.me/628136900872</a></div></div>`;
-            safeSwitch('pageResult');
-        };
-
-        // --- ADMIN VIEW FUNCTIONS ---
-        window.loadAdminData = () => {
-            if (!auth.currentUser || !window.titanState.isAdmin) return;
-            if(window.titanState.adminUnsubscribe) window.titanState.adminUnsubscribe();
-            
-            window.titanState.adminUnsubscribe = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'agents'), (snap) => {
-                const agents = []; let active = 0;
-                snap.forEach(d => {
-                    const data = { id: d.id, ...d.data() };
-                    agents.push(data); 
-                    if (data.status === 'active' && data.expiry && new Date(data.expiry) > new Date()) active++;
-                });
-                document.getElementById('statTotal').innerText = agents.length;
-                document.getElementById('statActive').innerText = active;
-                
-                const container = document.getElementById('agList'); container.innerHTML = "";
-                agents.forEach(a => {
-                    const isB = a.status === 'blocked';
-                    const sisa = getRemainingTimeText(a.expiry);
-                    container.innerHTML += `<div class="agent-card-supreme"><div class="pin-text-supreme">PIN: ${a.id}</div><div class="countdown-admin">SISA: ${sisa}</div><div class="status-badge-supreme" style="border-color:${isB ? '#ef4444':'var(--neon-cyan)'}">${a.status}</div><div class="action-row-supreme"><button onclick="window.toggleBlock('${a.id}', '${a.status}')" class="btn-buka-supreme" style="background:${isB?'#ef4444':'#1e293b'}">${isB ? 'BUKA' : 'SEKAT'}</button><button onclick="window.openRenew('${a.id}')" class="btn-blue-icon"><i data-lucide="calendar-plus" size="18"></i></button><button onclick="window.resetDevice('${a.id}')" class="btn-reset-icon"><i data-lucide="refresh-cw" size="18"></i></button><button onclick="window.delAgent('${a.id}')" class="btn-red-icon"><i data-lucide="trash-2" size="18"></i></button></div></div>`;
-                });
-                lucide.createIcons();
-            }, (err) => { if(err.code !== 'permission-denied') console.error(err); });
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'logs'), (snap) => {
-                const logs = []; 
-                snap.forEach(d => logs.push({ id: d.id, ...d.data() }));
-                logs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-                const area = document.getElementById('logArea'); area.innerHTML = "";
-                logs.forEach(l => {
-                    const time = l.timestamp ? new Date(l.timestamp.seconds * 1000).toLocaleString('id-ID') : '...';
-                    area.innerHTML += `<div class="log-item"><div class="log-time">${time}</div><div class="log-msg">${l.message}</div></div>`;
-                });
-            }, (err) => { if(err.code !== 'permission-denied') console.error(err); });
-        };
-
-        window.toggleBlock = async (id, cur) => {
-            const next = cur === 'blocked' ? 'active' : 'blocked';
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'agents', id), { status: next });
-            addSystemLog('renew', `PIN ${id} diubah ke ${next}`);
-        };
-        window.openRenew = (id) => { window.titanState.renewTarget = id; document.getElementById('renewTargetLabel').innerText = "PIN: " + id; document.getElementById('modalRenewPin').style.display = 'flex'; };
-        window.resetDevice = async (id) => { if(confirm(`RESET HP PIN ${id}?`)) { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'agents', id), { deviceId: "", firebaseUid: "" }); addSystemLog('reset', `Reset device PIN ${id}`); } };
-        window.delAgent = async (id) => { if(confirm(`HAPUS PIN ${id}?`)) { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'agents', id)); addSystemLog('del', `Hapus PIN ${id}`); } };
-        window.clearHistory = async () => { if(confirm("HAPUS LOG?")) { const snap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'logs')); for(const d of snap.docs) { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'logs', d.id)); } } };
-
-        // --- AUTH & BOOTSTRAP ---
-        window.addEventListener('load', async () => {
-            lucide.createIcons();
-            
-            if (!window.titanState.registrationCode) { 
-                window.titanState.registrationCode = Math.floor(100000 + Math.random() * 900000); 
-                document.getElementById('idInputDisplay').innerText = window.titanState.registrationCode; 
+        const OFFLINE_SAMSAT_DATABASE = {
+            "B1011NOC": {
+                "nopol": "B1011NOC",
+                "nama": "GREGORIUS DENNIS SURJONO",
+                "ktp": "3674020411880001",
+                "hp": "-",
+                "email": "-",
+                "pekerjaan": "PELAJAR / MAHASISWA",
+                "alamat": "JL. SUTERA KIRANA I NO. 9 RT. 001 RW. 007 KEL. PONDOK JAGUNG TIMUR KEC. SERPONG UTARA TANGERANG SELATAN",
+                "merk": "TOYOTA",
+                "type": "AGYA 1.0 G MT",
+                "tahun": "2014",
+                "warna": "SILVER METALIK",
+                "cylinder": "998",
+                "jumlah_roda": "0",
+                "bbm": "-",
+                "no_rangka": "MHKA4DA3JEJ019981",
+                "no_mesin": "1KRA064398",
+                "no_bpkb": "K10727214",
+                "no_stnk": "-",
+                "tanggal_daftar": "2019-07-15 15:24:05"
+            },
+            "BL6521SM": {
+                "wilayah": "BL", "nopol": "6521", "seri": "SM",
+                "alamat": "DS LANTIK",
+                "NoKTP": "1109035203690002", "NoKK": "", "NoHP": "085371859962", "Email": "",
+                "Pekerjaan": "-", "NamaPemilik": "ROSMIANA", "NoRangka": "MH1JB91167K029800",
+                "NoMesin": "JB91E1029659", "RT": "0", "RW": "0", "KodeProvinsi": "11", "KodeKel": "0",
+                "Merk": "HONDA", "Type": "NF125 TR", "TahunPembuatan": "2007",
+                "IsiCylinder": "125.000", "Warna": "HITAM", "JumlahSumbu": "2", "JumlahRoda": "2",
+                "NoBPKB": "9372563-A", "NoSTNK": "-", "TanggalDaftar": "2019-02-13 00:00:00", "NoFaktur": "0",
+                "TanglFaktur": "0", "APM": "-"
+            },
+            "B29MAY": {
+                "wilayah": "B", "nopol": "29", "seri": "MAY",
+                "alamat": "BATU AMPAR RT. 002 RW. 001 KEL. BATU AMPAR KEC. KRAMAT JATI JAKARTA TIMUR",
+                "NoKTP": "-", "NoKK": "", "NoHP": "-", "Email": "",
+                "Pekerjaan": "-", "NamaPemilik": "MAYJATI", "NoRangka": "MHYHYC11S8J100930",
+                "NoMesin": "M15AIA101027", "RT": "0", "RW": "0", "KodeProvinsi": "6", "KodeKel": "1001",
+                "Merk": "SUZUKI", "Type": "BALENO SX RW415N A/T", "TahunPembuatan": "2008",
+                "IsiCylinder": "1490.000", "Warna": "ABU ABU METALIK", "JumlahSumbu": "2", "JumlahRoda": "4",
+                "NoBPKB": "F7065727G", "NoSTNK": "", "TanggalDaftar": "2012-02-06 13:31:20", "NoFaktur": "0",
+                "TanglFaktur": "0", "APM": ""
             }
+        };
 
-            const initAuth = async () => {
+        const firebaseConfig = {
+            apiKey: "AIzaSyBonuHp4nd-YZKWV5IM_2HRCfJ2TQ4zJaY",
+            authDomain: "gen-lang-client-0221970857.firebaseapp.com",
+            projectId: "gen-lang-client-0221970857",
+            storageBucket: "gen-lang-client-0221970857.firebasestorage.app",
+            messagingSenderId: "483674298302",
+            appId: "1:483674298302:web:8c6ccf111af4de7bbecbef"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        const formatPlate = (str) => {
+            if (!str) return '';
+            return str.replace(/\s+/g, '').toUpperCase();
+        };
+
+        const Icons = {
+            Shield: ({cls}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={cls || "w-6 h-6"}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>,
+            Power: ({cls}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={cls || "w-6 h-6"}><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>,
+            Search: ({cls}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={cls || "w-6 h-6 pointer-events-none"}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+            Camera: ({cls}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={cls || "w-6 h-6"}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>,
+            Paste: ({cls}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={cls || "w-6 h-6"}><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>,
+            ChevronLeft: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><polyline points="15 18 9 12 15 6"/></svg>,
+            X: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+            Minus: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+            Plus: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        };
+
+        const App = () => {
+            const isAlreadyLoggedIn = localStorage.getItem('csid_logged_in') === 'true';
+            const savedRole = localStorage.getItem('csid_user_role') || 'user';
+            const savedExpiry = localStorage.getItem('csid_user_expiry') || null;
+            const savedActivePin = localStorage.getItem('csid_active_pin') || '';
+
+            const [user, setUser] = useState(null);
+            const [currentPage, setCurrentPage] = useState(isAlreadyLoggedIn ? 'search' : 'welcome');
+            const [registrationId, setRegistrationId] = useState('');
+            const [userRole, setUserRole] = useState(isAlreadyLoggedIn ? savedRole : 'user');
+            const [userExpiry, setUserExpiry] = useState(isAlreadyLoggedIn ? savedExpiry : null);
+            const [activePin, setActivePin] = useState(isAlreadyLoggedIn ? savedActivePin : '');
+            const [plate, setPlate] = useState('');
+            const [broadcast, setBroadcast] = useState("SELAMAT DATANG DI CSID.PRO - VEHICLE INTELLIGENCE SYSTEM v4.0");
+            const [loading, setLoading] = useState(true);
+            const [kbHeight, setKbHeight] = useState(25);
+            const [searchResult, setSearchResult] = useState(null);
+            const [notification, setNotification] = useState(null);
+            const [managedPins, setManagedPins] = useState([]);
+            const [showPinModal, setShowPinModal] = useState(false);
+            const [pinInput, setPinInput] = useState('');
+            const [adminTapCount, setAdminTapCount] = useState(0);
+            const [searchTerm, setSearchTerm] = useState('');
+            const [durationModal, setDurationModal] = useState(null);
+            const [showAddPinModal, setShowAddPinModal] = useState(false);
+            const [newPinInput, setNewPinInput] = useState('');
+            const [newPinDuration, setNewPinDuration] = useState(86400000); 
+            const [confirmModal, setConfirmModal] = useState(null); 
+
+            const [cameraActive, setCameraActive] = useState(false);
+            const [isScanning, setIsScanning] = useState(false);
+            const videoRef = useRef(null);
+            const canvasRef = useRef(null);
+            const inputRef = useRef(null);
+
+            const durationOptions = [
+                {l: '1 JAM', v: 3600000},
+                ...Array.from({length: 31}, (_, i) => ({l: `${i+1} HARI`, v: 86400000 * (i+1)})),
+                {l: 'PERMANEN', v: 'UNLIMITED'}
+            ];
+
+            const getDeviceId = () => {
                 try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
+                    let id = localStorage.getItem('csid_device_token');
+                    if (!id) { 
+                        id = 'DEV-' + Math.random().toString(36).substr(2, 9).toUpperCase(); 
+                        localStorage.setItem('csid_device_token', id); 
                     }
-                    window.titanState.isAuthCompleted = true;
-                } catch (e) { console.error("Auth failed:", e); }
+                    return id;
+                } catch (e) {
+                    return 'DEV-FALLBACK';
+                }
             };
-            await initAuth();
 
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    const dev = getDevID();
-                    onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'agents'), (snap) => {
-                        snap.forEach(docSnap => {
-                            const d = docSnap.data();
-                            if (d.firebaseUid === user.uid && d.deviceId === dev && d.status === 'active') {
-                                document.getElementById('uName').innerText = "PIN : " + docSnap.id;
-                                window.titanState.currentAgentId = docSnap.id;
-                                if (d.role === 'admin') { 
-                                    window.titanState.isAdmin = true; 
-                                    document.getElementById('adminNavBtn').classList.remove('hidden'); 
-                                    window.loadAdminData();
+            const showMsg = (txt) => { setNotification(txt); setTimeout(() => setNotification(null), 3000); };
+
+            useEffect(() => {
+                let savedId = '';
+                try {
+                    savedId = localStorage.getItem('csid_reg_id');
+                    if (!savedId) { 
+                        savedId = Math.floor(100000 + Math.random() * 900000).toString(); 
+                        localStorage.setItem('csid_reg_id', savedId); 
+                    }
+                } catch (e) {
+                    savedId = Math.floor(100000 + Math.random() * 900000).toString();
+                }
+                setRegistrationId(savedId);
+
+                const startAuth = async () => {
+                    try {
+                        const credential = await auth.signInAnonymously();
+                        const currentUser = credential.user;
+                        setUser(currentUser);
+
+                        if (currentUser) {
+                            const pinSnap = await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').doc(savedId).get();
+                            if (pinSnap.exists) {
+                                const data = pinSnap.data();
+                                const currentDeviceId = getDeviceId();
+                                if (!data.isBlocked && (data.expiry === 'UNLIMITED' || data.expiry > Date.now()) && (!data.deviceId || data.deviceId === currentDeviceId)) {
+                                    setUserRole(data.role || 'user'); setUserExpiry(data.expiry); setActivePin(savedId);
+                                    try {
+                                        localStorage.setItem('csid_logged_in', 'true');
+                                        localStorage.setItem('csid_user_role', data.role || 'user');
+                                        localStorage.setItem('csid_user_expiry', data.expiry);
+                                        localStorage.setItem('csid_active_pin', savedId);
+                                    } catch (e) {}
+                                    setCurrentPage('search');
+                                } else {
+                                    try { localStorage.removeItem('csid_logged_in'); } catch (e) {}
+                                    setCurrentPage('welcome');
                                 }
-                                if(d.expiry) startCountdown(d.expiry);
-                                if (document.getElementById('pageLogin').classList.contains('active')) safeSwitch('pageSearch');
+                            } else {
+                                setCurrentPage('welcome');
                             }
-                        });
-                    }, (err) => { if(err.code !== 'permission-denied') console.error(err); });
-                }
-            });
-
-            // Keyboard logic
-            const updateKBHeight = (delta) => {
-                let current = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--kb-height'));
-                let next = current + delta;
-                if(next >= 5 && next <= 40) document.documentElement.style.setProperty('--kb-height', next + 'px');
-            };
-            document.getElementById('kbPlus').onclick = () => updateKBHeight(2);
-            document.getElementById('kbMinus').onclick = () => updateKBHeight(-2);
-
-            const buildKB = () => {
-                const kbBox = document.getElementById('kbBox'); kbBox.innerHTML = "";
-                const rows = [["1","2","3","DEL","CLR"],["4","5","6","0"],["7","8","9"],["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["Z","X","C","V","B","N","M"]];
-                rows.forEach(r => {
-                    const rowEl = document.createElement('div'); rowEl.className = "kb-row mb-1";
-                    r.forEach(k => {
-                        const btn = document.createElement('button'); btn.className = "kb-btn";
-                        if(k === "DEL") { btn.innerHTML = '<i data-lucide="delete" class="mx-auto" size="20"></i>'; btn.className += " bg-black text-[#00e5ff]"; btn.onpointerdown = (e) => { e.preventDefault(); document.getElementById('plateDisplay').value = document.getElementById('plateDisplay').value.slice(0,-1); updateHint(); }; }
-                        else if(k === "CLR") { btn.innerText = "CLR"; btn.className += " bg-black text-[#00e5ff] text-xs"; btn.onpointerdown = (e) => { e.preventDefault(); document.getElementById('plateDisplay').value = ""; updateHint(); }; }
-                        else { btn.innerText = k; btn.onpointerdown = (e) => { e.preventDefault(); document.getElementById('plateDisplay').value += k; updateHint(); }; }
-                        rowEl.appendChild(btn);
-                    });
-                    kbBox.appendChild(rowEl);
-                });
-                lucide.createIcons();
-            };
-            buildKB();
-
-            const updateHint = () => { document.getElementById('marqueeHint').style.display = document.getElementById('plateDisplay').value ? 'none' : 'flex'; };
-
-            // PIN LOGIN LISTENER
-            document.getElementById('pinInput').addEventListener('input', async (e) => {
-                const v = e.target.value;
-                document.querySelectorAll('.dot').forEach((d, i) => i < v.length ? d.classList.add('active') : d.classList.remove('active'));
-                if (v.length === 6) {
-                    if(!window.titanState.isAuthCompleted) { showM("KONEKSI", "Menghubungkan ke satelit..."); return; }
-                    showL("MEMERIKSA PIN..."); const dev = getDevID();
-                    try {
-                        const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'agents', v));
-                        if (snap.exists()) {
-                            const d = snap.data();
-                            if (new Date(d.expiry) < new Date()) { showM("EXPIRED", "PIN kadaluarsa."); }
-                            else if (d.status === 'blocked') { showM("TERKUNCI", "Akses disekat Admin."); }
-                            else if (d.deviceId && d.deviceId !== dev) { showM("DEVICE LOCK", "PIN TERDAFTAR DI HP LAIN."); }
-                            else {
-                                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'agents', v), { deviceId: dev, firebaseUid: auth.currentUser?.uid || "" });
-                            }
-                        } else if (v === "280189") { window.titanState.isAdmin = true; document.getElementById('adminNavBtn').classList.remove('hidden'); safeSwitch('pageSearch'); window.loadAdminData(); }
-                        else { showM("SALAH", "PIN TIDAK VALID."); }
-                    } catch(err) { console.error(err); }
-                    hideL(); e.target.value = ""; document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-                }
-            });
-
-            // ACTIONS
-            document.getElementById('loginCardArea').onclick = () => document.getElementById('pinInput').focus();
-            document.getElementById('loginBtnTrigger').onclick = () => document.getElementById('pinInput').focus();
-            document.getElementById('searchBtn').onclick = () => doSearch();
-            document.getElementById('backSearchBtn').onclick = () => safeSwitch('pageSearch');
-            
-            document.getElementById('logoutBtn').onclick = async () => { 
-                showL("MEMATIKAN SESI...");
-                if (window.titanState.countdownInterval) clearInterval(window.titanState.countdownInterval);
-                try { await signOut(auth); } catch(e) {}
-                location.reload(); 
-            };
-
-            document.getElementById('adminNavBtn').onclick = () => { safeSwitch('pageAdmin'); window.loadAdminData(); };
-            document.getElementById('closeAdminBtn').onclick = () => safeSwitch('pageSearch');
-            document.getElementById('addNewPinBtn').onclick = () => document.getElementById('modalAddPin').style.display='flex';
-            document.getElementById('cancelAddBtn').onclick = () => document.getElementById('modalAddPin').style.display='none';
-            document.getElementById('closeAlertBtn').onclick = () => document.getElementById('modalAlert').style.display='none';
-            document.getElementById('clearLogBtn').onclick = () => window.clearHistory();
-            document.getElementById('cancelRenewBtn').onclick = () => document.getElementById('modalRenewPin').style.display='none';
-            
-            document.getElementById('confirmRenewBtn').onclick = async () => {
-                const id = window.titanState.renewTarget; const days = parseFloat(document.getElementById('renewChoice').value);
-                if(!id) return; showL("MEMPERBARUI...");
-                const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'agents', id));
-                if(snap.exists()){
-                    const curExp = new Date(snap.data().expiry).getTime();
-                    const newExp = new Date((curExp < Date.now() ? Date.now() : curExp) + days * 86400000).toISOString();
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'agents', id), { expiry: newExp, status: 'active' });
-                    addSystemLog('renew', `PIN ${id} diperpanjang`);
-                    document.getElementById('modalRenewPin').style.display='none';
-                }
-                hideL();
-            };
-
-            document.getElementById('waRegBtn').onclick = () => {
-                window.titanState.registrationCode = Math.floor(100000 + Math.random() * 900000);
-                document.getElementById('idInputDisplay').innerText = window.titanState.registrationCode;
-                const msg = `Halo CSID.PRO\nMohon Aktifkan PIN Saya\n\nKODE PIN: *${window.titanState.registrationCode}*\nDan Mohon petunjuk pemakaian selanjutnya..?`;
-                window.open(`https://api.whatsapp.com/send?phone=628136900872&text=${encodeURIComponent(msg)}`, '_blank');
-            };
-
-            document.getElementById('confirmAddBtn').onclick = async () => {
-                const pin = document.getElementById('newPinVal').value; const days = parseFloat(document.getElementById('expiryChoice').value);
-                if (pin.length < 4) return; showL("MENYIMPAN...");
-                const exp = new Date(Date.now() + days * 86400000).toISOString();
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'agents', pin), { status: 'active', role: 'agent', expiry: exp, deviceId: "", firebaseUid: "" });
-                addSystemLog('new', `PIN Baru: ${pin}`);
-                document.getElementById('modalAddPin').style.display = 'none'; hideL();
-            };
-
-            // AI CAMERA ENGINE (APK READY)
-            document.getElementById('camBtn').onclick = () => document.getElementById('camInput').click();
-            document.getElementById('camInput').onchange = async (e) => {
-                const file = e.target.files[0]; if (!file) return; 
-                showL("SEDANG MENGANALISA...");
-                const reader = new FileReader(); reader.readAsDataURL(file);
-                reader.onload = async () => {
-                    const b64 = reader.result.split(',')[1];
-                    try {
-                        const payload = { contents: [{ role: "user", parts: [{ text: "Extract vehicle plate number (TNKB), chassis number, or engine number from this image. Output only the alphanumeric string without spaces or symbols." }, { inlineData: { mimeType: "image/png", data: b64 } }] }] };
-                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                        const data = await res.json();
-                        const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.replace(/[^A-Z0-9]/g, '').toUpperCase();
-                        if (text && text.length > 3) { 
-                            document.getElementById('plateDisplay').value = text; 
-                            updateHint(); 
-                            doSearch(); 
-                        } else { showM("GAGAL", "Data tidak terdeteksi. Foto kurang jelas."); }
-                    } catch(err) { showM("ERROR", "AI Satelit tidak merespon."); }
-                    hideL();
+                        }
+                    } catch (e) { 
+                        console.error("Auth error:", e);
+                        setCurrentPage('welcome'); 
+                    } finally { 
+                        setLoading(false); 
+                    }
                 };
+                startAuth();
+            }, []);
+
+            useEffect(() => {
+                if (!user) return;
+                
+                const unsubSettings = db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_settings').doc('main').onSnapshot((d) => { 
+                    if (d.exists) setBroadcast(d.data().text || broadcast); 
+                }, (err) => console.error("Settings stream error:", err));
+                
+                const unsubPins = db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').onSnapshot((snap) => { 
+                    const pins = [];
+                    snap.forEach(doc => {
+                        pins.push({ id: doc.id, ...doc.data() });
+                    });
+                    setManagedPins(pins); 
+                }, (err) => console.error("Pins stream error:", err));
+
+                return () => { unsubSettings(); unsubPins(); };
+            }, [user]);
+
+            const handleLoginOnline = async () => {
+                setLoading(true);
+                try {
+                    const pinSnap = await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').doc(registrationId).get();
+                    if (!pinSnap.exists) throw new Error("ID BELUM DIAKTIFKAN ADMIN");
+                    const data = pinSnap.data();
+                    const currentDeviceId = getDeviceId();
+                    if (data.isBlocked) throw new Error("AKSES DIBLOKIR");
+                    if (data.expiry !== 'UNLIMITED' && Date.now() > data.expiry) throw new Error("MASA AKTIF HABIS");
+                    if (data.deviceId && data.deviceId !== currentDeviceId) throw new Error("TERDAFTAR DI HP LAIN");
+                    if (!data.deviceId) {
+                        await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').doc(registrationId).set({ deviceId: currentDeviceId }, { merge: true });
+                    }
+                    setUserRole(data.role || 'user'); setUserExpiry(data.expiry); setActivePin(registrationId);
+                    localStorage.setItem('csid_logged_in', 'true');
+                    setCurrentPage('search');
+                } catch (e) { showMsg(e.message); } finally { setLoading(false); }
             };
 
-            document.getElementById('copyBtn').onclick = () => {
-                const v = window.titanState.currentReportData; if (!v) return;
-                const text = formatDataForOutput(v);
-                const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
-                showM("BERHASIL", "Laporan telah disalin.");
+            const handleMasterLogin = () => {
+                if (pinInput === MASTER_PIN) {
+                    setUserRole('master'); setUserExpiry('UNLIMITED'); setActivePin('MASTER');
+                    localStorage.setItem('csid_logged_in', 'true');
+                    setCurrentPage('search'); setShowPinModal(false); setPinInput('');
+                } else { showMsg("PIN SALAH"); setPinInput(''); }
             };
-            document.getElementById('waShareBtn').onclick = () => {
-                const v = window.titanState.currentReportData; if (!v) return;
-                const text = formatDataForOutput(v);
-                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+
+            const startCamera = async () => {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    setCameraActive(true);
+                    setTimeout(() => { if (videoRef.current) videoRef.current.srcObject = stream; }, 100);
+                } catch (err) { showMsg("KAMERA TIDAK DIAKSES"); }
             };
-        });
+
+            const stopCamera = () => { if (videoRef.current && videoRef.current.srcObject) { videoRef.current.srcObject.getTracks().forEach(t => t.stop()); } setCameraActive(false); };
+
+            const captureAndProcess = async () => {
+                if (!videoRef.current || !canvasRef.current) return;
+                setIsScanning(true);
+                const video = videoRef.current;
+                const canvas = canvasRef.current;
+                const context = canvas.getContext('2d');
+                const vWidth = video.videoWidth;
+                const vHeight = video.videoHeight;
+                const cropWidth = Math.round(vWidth * 0.70);
+                const cropHeight = Math.round(vHeight * 0.40);
+                const cropX = Math.round((vWidth - cropWidth) / 2);
+                const cropY = Math.round((vHeight - cropHeight) / 2);
+                canvas.width = cropWidth; canvas.height = cropHeight;
+                context.drawImage(video, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+                try {
+                    const { data: { text } } = await Tesseract.recognize(canvas, 'eng');
+                    const firstLine = text.split('\n')[0].trim();
+                    if (firstLine) {
+                        let cleaned = firstLine.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').trim().toUpperCase();
+                        let combined = cleaned.replace(/\s/g, '');
+                        const nopolRegex = /^([A-Z]{1,2})(\d{1,4})([A-Z]{0,3})$/;
+                        const match = combined.match(nopolRegex);
+                        let finalResult = match ? (match[3] ? `${match[1]} ${match[2]} ${match[3]}` : `${match[1]} ${match[2]}`) : combined;
+                        setPlate(finalResult); showMsg("TERDETEKSI: " + finalResult); stopCamera();
+                    } else { showMsg("TEKS TIDAK JELAS"); }
+                } catch (e) { showMsg("OCR GAGAL"); } finally { setIsScanning(false); }
+            };
+
+            const extractJson = (text) => {
+                if (typeof text !== 'string') return text;
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    const startObj = text.indexOf('{');
+                    const startArr = text.indexOf('[');
+                    let start = -1;
+                    let end = -1;
+                    
+                    if (startObj !== -1 && (startArr === -1 || startObj < startArr)) {
+                        start = startObj;
+                        end = text.lastIndexOf('}');
+                    } else if (startArr !== -1) {
+                        start = startArr;
+                        end = text.lastIndexOf(']');
+                    }
+                    
+                    if (start !== -1 && end !== -1 && end > start) {
+                        try {
+                            return JSON.parse(text.substring(start, end + 1));
+                        } catch (err) {
+                            try {
+                                const cleaned = text.substring(start, end + 1)
+                                    .replace(/\\"/g, '"')
+                                    .replace(/\\\\/g, '\\');
+                                return JSON.parse(cleaned);
+                            } catch (err2) {
+                                return null;
+                            }
+                        }
+                    }
+                }
+                return null;
+            };
+
+            const unifyAndExtractVehicleData = (rawText) => {
+                if (!rawText) return null;
+                
+                let parsed = null;
+                if (typeof rawText === 'object') {
+                    parsed = rawText;
+                } else {
+                    try {
+                        parsed = JSON.parse(rawText);
+                    } catch (e) {
+                        parsed = extractJson(rawText); 
+                    }
+                }
+                
+                if (!parsed) return null;
+                
+                if (parsed.contents) {
+                    let inner = null;
+                    if (typeof parsed.contents === 'string') {
+                        try {
+                            inner = JSON.parse(parsed.contents);
+                        } catch (e) {
+                            inner = extractJson(parsed.contents);
+                        }
+                    } else {
+                        inner = parsed.contents;
+                    }
+                    if (inner) parsed = inner;
+                }
+                
+                const findVehicleObject = (obj) => {
+                    if (!obj) return null;
+                    if (typeof obj !== 'object') return null;
+                    
+                    if (Array.isArray(obj)) {
+                        for (let item of obj) {
+                            const found = findVehicleObject(item);
+                            if (found) return found;
+                        }
+                        return null;
+                    }
+                    
+                    if (obj.data && typeof obj.data === 'object') {
+                        const found = findVehicleObject(obj.data);
+                        if (found) return found;
+                    }
+
+                    const vehicleKeys = [
+                        'nopol', 'nama', 'NamaPemilik', 'NoRangka', 'no_rangka', 
+                        'NoMesin', 'no_mesin', 'NoSTNK', 'no_stnk', 'NoBPKB', 'no_bpkb',
+                        'wilayah', 'seri', 'ktp', 'NoKTP', 'type', 'merk'
+                    ];
+                    
+                    let matchCount = 0;
+                    for (let key of vehicleKeys) {
+                        if (obj[key] !== undefined && obj[key] !== null && String(obj[key]).trim() !== '') {
+                            matchCount++;
+                        }
+                    }
+                    
+                    if (matchCount >= 2) {
+                        return obj;
+                    }
+                    
+                    for (let k in obj) {
+                        if (obj.hasOwnProperty(k) && obj[k] && typeof obj[k] === 'object') {
+                            const found = findVehicleObject(obj[k]);
+                            if (found) return found;
+                        }
+                    }
+                    
+                    return null;
+                };
+                
+                return findVehicleObject(parsed);
+            };
+
+            const fetchData = async () => {
+                const rawPlate = plate.trim().toUpperCase();
+                if (!rawPlate) { showMsg("MASUKKAN PLAT NOMOR"); return; }
+                setLoading(true);
+
+                const cleanQuery = rawPlate.replace(/\s+/g, '').toLowerCase();
+
+                const offlineMatch = rawPlate.replace(/\s+/g, '').toUpperCase();
+                if (OFFLINE_SAMSAT_DATABASE[offlineMatch]) {
+                    setSearchResult(OFFLINE_SAMSAT_DATABASE[offlineMatch]);
+                    setCurrentPage('result');
+                    setLoading(false);
+                    return;
+                }
+
+                try {
+                    const cached = sessionStorage.getItem(cleanQuery);
+                    if (cached) {
+                        setSearchResult(JSON.parse(cached));
+                        setCurrentPage('result');
+                        setLoading(false);
+                        return;
+                    }
+                } catch (e) {
+                    console.warn("sessionStorage error:", e);
+                }
+
+                const isHttps = window.location.protocol === 'https:';
+                const requestPool = [];
+
+                const baseUrls = [
+                    `${API_UTAMA_1}${encodeURIComponent(cleanQuery)}`,
+                    `${API_UTAMA_2}${encodeURIComponent(cleanQuery)}`
+                ];
+
+                baseUrls.forEach(baseUrl => {
+                    requestPool.push({ url: baseUrl, type: 'Direct APK Connection' });
+                    requestPool.push({ url: `https://api.allorigins.win/raw?url=${encodeURIComponent(baseUrl)}`, type: 'AllOrigins Raw' });
+                    requestPool.push({ url: `https://corsproxy.io/?${encodeURIComponent(baseUrl)}`, type: 'CORSProxy.io' });
+                    requestPool.push({ url: `https://allorigins.hexschool.workers.dev/raw?url=${encodeURIComponent(baseUrl)}`, type: 'Hexschool Cloudflare' });
+                    requestPool.push({ url: `https://api.allorigins.win/get?url=${encodeURIComponent(baseUrl)}`, type: 'AllOrigins Wrapped' });
+                    requestPool.push({ url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(baseUrl)}`, type: 'CodeTabs' });
+                });
+
+                let resolved = false;
+                let activeRequests = requestPool.length;
+                const controllers = [];
+
+                const cleanLoadingAndTransition = (data) => {
+                    if (resolved) return;
+                    resolved = true;
+                    
+                    controllers.forEach(ctrl => {
+                        try { ctrl.abort(); } catch(e) {}
+                    });
+
+                    try {
+                        sessionStorage.setItem(cleanQuery, JSON.stringify(data));
+                    } catch (e) {}
+
+                    setSearchResult(data);
+                    setCurrentPage('result');
+                    setLoading(false);
+                };
+
+                const handleFailure = () => {
+                    activeRequests--;
+                    if (activeRequests === 0 && !resolved) {
+                        setLoading(false);
+                        showMsg("DATA TIDAK DITEMUKAN / TIMEOUT");
+                    }
+                };
+
+                requestPool.forEach((targetObj) => {
+                    const ctrl = new AbortController();
+                    controllers.push(ctrl);
+                    const id = setTimeout(() => ctrl.abort(), 6000); 
+
+                    try {
+                        fetch(targetObj.url, { signal: ctrl.signal })
+                            .then(async (res) => {
+                                clearTimeout(id);
+                                if (resolved) return;
+                                if (!res.ok) { handleFailure(); return; }
+                                
+                                const text = await res.text();
+                                const vehicleData = unifyAndExtractVehicleData(text);
+                                
+                                if (vehicleData && !resolved) {
+                                    cleanLoadingAndTransition(vehicleData);
+                                } else {
+                                    handleFailure();
+                                }
+                            })
+                            .catch((err) => {
+                                clearTimeout(id);
+                                handleFailure();
+                            });
+                    } catch (err) {
+                        clearTimeout(id);
+                        handleFailure();
+                    }
+                });
+            };
+
+            const extractField = (item, keys) => {
+                if (!item) return '-';
+                for (let k of keys) {
+                    if (item[k] !== undefined && item[k] !== null && item[k] !== '') {
+                        return String(item[k]).toUpperCase();
+                    }
+                }
+                return '-';
+            };
+
+            const getVal = (cat) => {
+                if (!searchResult) return "-";
+                const item = searchResult;
+                
+                switch (cat) {
+                    case 'Nama': 
+                        return extractField(item, ['nama', 'NamaPemilik', 'nama_pemilik', 'Nama', 'nm_pmlk']);
+                    case 'NIK': 
+                        return extractField(item, ['ktp', 'NIK', 'NoKTP', 'nik', 'no_ktp', 'identitas', 'no_identitas']);
+                    case 'HP': 
+                        return extractField(item, ['hp', 'NoHP', 'MSSDN', 'msisdn', 'phone', 'no_hp', 'no_telp']);
+                    case 'Pekerjaan': 
+                        return extractField(item, ['pekerjaan', 'Pekerjaan', 'job', 'pekerjaan_pemilik']);
+                    case 'Alamat': 
+                        return extractField(item, ['alamat', 'Alamat', 'alamat_pemilik']);
+                    case 'NopolServer': 
+                        const w = extractField(item, ['wilayah', 'Wilayah', 'prefix', 'Prefix']).replace(/\s+/g, '').toUpperCase();
+                        const n = extractField(item, ['nopol', 'Nopol', 'no_polisi', 'noPolisi']).replace(/\s+/g, '').toUpperCase();
+                        const s = extractField(item, ['seri', 'Seri', 'suffix', 'Suffix']).replace(/\s+/g, '').toUpperCase();
+                        
+                        if (w !== '-' && n !== '-') {
+                            return `${w}${n}${s !== '-' ? s : ''}`;
+                        }
+                        
+                        const flatNopol = extractField(item, ['nopol', 'no_polisi', 'noPolisi']).replace(/\s+/g, '').toUpperCase();
+                        if (flatNopol !== '-') {
+                            if (/^\d+$/.test(flatNopol)) {
+                                return formatPlate(plate);
+                            }
+                            return flatNopol;
+                        }
+                        return formatPlate(plate);
+                    case 'Merk': 
+                        return extractField(item, ['merk', 'Merk', 'Merek', 'merek', 'brand']);
+                    case 'Tipe': 
+                        return extractField(item, ['type', 'Type', 'Tipe', 'tipe', 'model']);
+                    case 'Tahun': 
+                        return extractField(item, ['tahun', 'TahunPembuatan', 'Tahun', 'tahun_pembuatan', 'tahun_buat', 'th_buat']);
+                    case 'Warna': 
+                        return extractField(item, ['warna', 'Warna', 'warna_tnkb', 'warna_kendaraan']);
+                    case 'CC': 
+                        return extractField(item, ['cylinder', 'IsiCylinder', 'Cylinder', 'isi_silinder', 'cc', 'isi_cylinder']);
+                    case 'Noka': 
+                        return extractField(item, ['no_rangka', 'NoRangka', 'noka', 'vin', 'no_frame']);
+                    case 'Nosin': 
+                        return extractField(item, ['no_mesin', 'NoMesin', 'nosin', 'no_engine']);
+                    case 'BPKB': 
+                        return extractField(item, ['no_bpkb', 'NoBPKB', 'bpkb', 'no_bpkb']);
+                    case 'STNK': 
+                        return extractField(item, ['no_stnk', 'NoSTNK', 'stnk', 'no_stnk']);
+                    case 'Tgl': 
+                        return extractField(item, ['tanggal_daftar', 'TglDaftar', 'TanggalDaftar', 'tgl_daftar', 'tglDaftar']);
+                    case 'APM': 
+                        return extractField(item, ['APM', 'apm', 'atpm', 'AgenPemegangMerek', 'agen_pemegang_merek']);
+                    default: 
+                        return "-";
+                }
+            };
+
+            const copyToClipboard = (text) => {
+                const el = document.createElement('textarea'); el.value = text; el.setAttribute('readonly', ''); el.style.position = 'fixed'; el.style.top = '0'; el.style.left = '0'; el.style.width = '2px'; el.style.height = '2px'; el.style.opacity = '0.01'; document.body.appendChild(el); el.focus(); el.select(); el.setSelectionRange(0, 99999);
+                try { if (document.execCommand('copy')) showMsg("LAPORAN DISALIN"); } catch (err) { showMsg("GAGAL SALIN"); } document.body.removeChild(el);
+            };
+
+            const shareToWhatsApp = (text) => {
+                copyToClipboard(text);
+                const webUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+                const a = document.createElement('a'); a.href = webUrl; a.target = '_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            };
+
+            const getRemainingTime = (e) => { if (e === 'UNLIMITED') return "PERMANEN"; const d = e - Date.now(); if (d <= 0) return "EXPIRED"; const days = Math.floor(d / 86400000); return days >= 1 ? `${days + 1} HARI` : `${Math.floor(d / 3600000)} JAM`; };
+
+            const renderStatusOverlay = () => (
+                <div className="text-right glass-panel px-3 py-1.5 rounded-xl border border-white/10 z-[60]">
+                    <p className="text-[10px] font-black uppercase text-orange-500">ID: {activePin}</p>
+                    <p className="text-[9px] font-black text-slate-400">SISA: {getRemainingTime(userExpiry)}</p>
+                </div>
+            );
+
+            const handleSearchPress = (e) => {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                fetchData();
+            };
+
+            return (
+                <div className="mobile-shell bg-black">
+                    {/* Welcome Screen */}
+                    {currentPage === 'welcome' && (
+                        <div className="flex-1 flex flex-col items-center justify-between py-12 px-8 h-full relative overflow-y-auto scrollbar-hide">
+                            <div className="absolute top-[-10%] left-[-10%] w-[80%] h-[40%] bg-orange-600/10 blur-[150px] rounded-full" />
+                            <div className="text-center z-10 mt-6 space-y-1.5">
+                                <p className="text-[15px] font-black uppercase tracking-tight text-orange-500 leading-tight">APLIKASI</p>
+                                <p className="text-[15px] font-black uppercase tracking-tight leading-tight text-white">SAMSAT CSID.PRO NASIONAL</p>
+                            </div>
+                            <div className="flex flex-col items-center z-10">
+                                <h1 onClick={() => { setAdminTapCount(c => c + 1); if(adminTapCount === 4) setShowPinModal(true); }} className="text-[72px] font-black text-white text-glow cursor-pointer tracking-tighter">CSID.PRO</h1>
+                                <div className="h-1 w-20 bg-orange-500 rounded-full -mt-2 animate-pulse" />
+                            </div>
+                            <div className="w-full flex flex-col items-center gap-6 mb-8 z-10">
+                                <div className="w-full max-w-[340px] glass-panel rounded-[2.5rem] py-8 px-8 text-center border-orange-500/10">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-3">ID PENDAFTARAN</p>
+                                    <p className="text-[60px] font-black text-white font-mono-custom tracking-tighter">{registrationId}</p>
+                                </div>
+                                <div className="w-full space-y-4 max-w-[340px]">
+                                    <button type="button" onClick={handleLoginOnline} className="w-full bg-white text-black py-5 rounded-2xl font-black text-lg uppercase shadow-lg active:scale-95 flex items-center justify-center gap-3"><Icons.Shield cls="w-5 h-5" /> MASUK SISTEM</button>
+                                    <button type="button" onClick={() => window.open(`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent('Aktivasi ID: '+registrationId)}`)} className="w-full bg-[#108a6e] text-white py-5 rounded-2xl font-black text-lg uppercase shadow-lg active:scale-95 flex items-center justify-center gap-3">DAFTAR ADMIN</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Search Screen */}
+                    {currentPage === 'search' && (
+                        <div className="flex-1 flex flex-col h-full bg-black">
+                            <header className="px-6 py-5 flex items-center justify-between border-b border-white/5 bg-black/80 backdrop-blur-md z-50">
+                                <div className="flex items-center gap-3 text-white">
+                                    <div className="bg-orange-600 p-1.5 rounded-lg shadow-[0_0_15px_rgba(249,115,22,0.4)]"><Icons.Shield cls="w-5 h-5 text-white" /></div>
+                                    <span className="font-black text-2xl tracking-tighter">CSID.PRO</span>
+                                </div>
+                                {renderStatusOverlay()}
+                            </header>
+                            <div className="h-10 bg-black/50 overflow-hidden flex items-center border-y border-orange-500/10">
+                                <div className="animate-marquee px-4 text-[10px] font-black uppercase tracking-widest text-slate-400">{broadcast}</div>
+                            </div>
+                            <main className="flex-1 flex flex-col px-4 pb-6 relative overflow-hidden">
+                                <div className="w-full h-24 border-2 border-orange-600/30 rounded-3xl bg-orange-600/5 flex items-center justify-center px-8 mb-4 mt-6">
+                                    <input 
+                                        ref={inputRef} 
+                                        type="text" 
+                                        inputMode="none" 
+                                        value={plate} 
+                                        onChange={(e) => setPlate(e.target.value.toUpperCase())} 
+                                        className={`bg-transparent w-full text-center font-black uppercase ${plate.length > 10 ? 'text-2xl' : 'text-5xl'} text-white tracking-tighter outline-none border-none`}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                fetchData();
+                                            }
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Banner Restricted Access Asli */}
+                                <div className="w-full text-center py-2.5 px-4 mb-2 border border-red-900/30 rounded-2xl bg-red-950/10">
+                                    <p className="text-orange-500 font-black text-xs tracking-widest flex items-center justify-center gap-1.5">
+                                        🔓UNLIMITED AKSES DATA
+                                    </p>
+                                    <p className="text-[9px] font-black text-slate-400 tracking-wider mt-0.5">
+                                        DILARANG KERAS MENYALAHGUNAKAN SISTEM INI
+                                    </p>
+                                    <p className="text-[8px] font-bold text-slate-600 tracking-wider">
+                                        HAK CIPTA CSID.PRO INTELLIGENCE SECURITY
+                                    </p>
+                                </div>
+
+                                <div className="mt-auto space-y-1">
+                                    {/* Action & Control Buttons Row (Pitch Black Style) */}
+                                    <div className={`grid ${userRole === 'master' ? 'grid-cols-7' : 'grid-cols-6'} gap-[2px]`}>
+                                        <button type="button" onClick={() => setKbHeight(h => Math.max(15, h-2))} className="bg-black h-14 rounded-none key-press-effect flex items-center justify-center text-slate-400 border border-white/5 font-black text-xl outline-none"><Icons.Minus /></button>
+                                        <button type="button" onClick={() => setKbHeight(h => Math.min(35, h+2))} className="bg-black h-14 rounded-none key-press-effect flex items-center justify-center text-slate-400 border border-white/5 font-black text-xl outline-none"><Icons.Plus /></button>
+                                        <button type="button" onClick={startCamera} className="bg-black h-14 rounded-none key-press-effect flex items-center justify-center text-slate-400 border border-white/5 outline-none"><Icons.Camera /></button>
+                                        <button type="button" onClick={async () => { try { const t = await navigator.clipboard.readText(); setPlate(t.toUpperCase().replace(/\s/g, '')); } catch(e){} }} className="bg-black h-14 rounded-none key-press-effect flex items-center justify-center text-slate-400 border border-white/5 outline-none"><Icons.Paste /></button>
+                                        {userRole === 'master' && <button type="button" onClick={() => setCurrentPage('admin')} className="bg-orange-600/20 h-14 rounded-none key-press-effect flex items-center justify-center text-orange-500 border border-white/5 outline-none"><Icons.Shield /></button>}
+                                        <button type="button" onClick={() => window.location.reload()} className="bg-red-600/20 h-14 rounded-none key-press-effect flex items-center justify-center text-red-500 border border-white/5 outline-none"><Icons.Power /></button>
+                                        
+                                        <button 
+                                            type="button"
+                                            onClick={handleSearchPress}
+                                            className="bg-orange-600 h-14 rounded-none key-press-effect flex items-center justify-center text-white shadow-lg border border-white/5 cursor-pointer active:bg-orange-700 outline-none"
+                                        >
+                                            <Icons.Search />
+                                        </button>
+                                    </div>
+                                    
+                                    {/* Numeric and Alphanumeric Keyboard (Pitch Black Style) */}
+                                    <div className="flex flex-col gap-[2px]">
+                                        <div className="grid grid-cols-5 gap-[2px]">
+                                            {['1','2','3'].map(n => <button type="button" key={n} onClick={() => setPlate(p => p+n)} style={{height: `${kbHeight * 2.8}px`}} className="bg-black text-white rounded-none border border-white/5 text-4xl font-black key-press-effect font-mono-custom outline-none">{n}</button>)}
+                                            <button type="button" onClick={() => setPlate(p => p.slice(0,-1))} style={{height: `${kbHeight * 2.8}px`}} className="bg-red-600 text-white rounded-none font-black text-sm key-press-effect border border-white/5 outline-none">DEL</button>
+                                            <button type="button" onClick={() => setPlate('')} style={{height: `${kbHeight * 2.8}px`}} className="bg-red-600 text-white rounded-none font-black text-sm key-press-effect border border-white/5 outline-none">CLR</button>
+                                        </div>
+                                        <div className="grid grid-cols-4 gap-[2px]">
+                                            {['4','5','6','0'].map(n => <button type="button" key={n} onClick={() => setPlate(p => p+n)} style={{height: `${kbHeight * 2.8}px`}} className="bg-black text-white rounded-none border border-white/5 text-4xl font-black key-press-effect font-mono-custom outline-none">{n}</button>)}
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-[2px]">
+                                            {['7','8','9'].map(n => <button type="button" key={n} onClick={() => setPlate(p => p+n)} style={{height: `${kbHeight * 2.8}px`}} className="bg-black text-white rounded-none border border-white/5 text-4xl font-black key-press-effect font-mono-custom outline-none">{n}</button>)}
+                                        </div>
+                                        <div className="flex flex-col gap-[2px] pt-1">
+                                            {[ ['Q','W','E','R','T','Y','U','I','O','P'], ['A','S','D','F','G','H','J','K','L'], ['Z','X','C','V','B','N','M'] ].map((row, i) => (
+                                                <div key={i} className="flex gap-[2px] justify-center">{row.map(char => ( <button type="button" key={char} onClick={() => setPlate(p => p+char)} style={{height: `${kbHeight * 3.2}px`}} className="flex-1 bg-black text-white rounded-none border border-white/5 text-xl font-black key-press-effect outline-none">{char}</button> ))}</div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </main>
+                        </div>
+                    )}
+
+                    {/* Result Screen (Page 4) */}
+                    {currentPage === 'result' && (
+                        <div className="flex-1 flex flex-col h-full bg-black relative overflow-hidden">
+                            <header className="px-6 py-6 flex items-center justify-between border-b border-white/5 bg-black/80 backdrop-blur-md z-40">
+                                <button type="button" onClick={() => setCurrentPage('search')} className="key-press-effect p-2.5 bg-slate-900 rounded-2xl text-white shadow-lg outline-none"><Icons.ChevronLeft /></button>
+                                <span className="text-white font-black tracking-widest text-[11px] uppercase opacity-70">LAPORAN INTEGRASI</span>
+                                {renderStatusOverlay()}
+                            </header>
+                            <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 scrollbar-hide pb-32 w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
+                                <div className="mb-4 bg-orange-600/10 border border-orange-600/30 rounded-2xl px-5 py-3 flex items-center gap-3 w-full animate-pulse">
+                                    <span className="text-orange-500 font-bold text-sm">🔒</span>
+                                    <p className="text-[10px] font-black text-orange-500 tracking-wider uppercase">LAPORAN TERSEGEL - DATA ASLI KHUSUS SAMSAT</p>
+                                </div>
+                                <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-8 font-mono-custom text-[13px] text-white/90 leading-relaxed whitespace-pre-wrap break-words w-full shadow-2xl shimmer pointer-events-auto">
+                                    {`___________________________________\n🇮🇩 SUMBER : APLIKASI CSID.PRO 📡\n--------------------------------------------\n🕵 IDENTITAS PEMILIK :\n--------------------------------------------\nNAMA : ${getVal('Nama')}\nNIK : ${getVal('NIK')}\nMSSDN : ${getVal('HP')}\nPEKERJAAN : ${getVal('Pekerjaan')}\nALAMAT : ${getVal('Alamat')}\n--------------------------------------------\n🚘 DATA KENDARAAN :\n--------------------------------------------\nNOPOL : ${getVal('NopolServer')}\nMEREK : ${getVal('Merk')}\nTYPE : ${getVal('Tipe')}\nTAHUN : ${getVal('Tahun')}\nWARNA : ${getVal('Warna')}\nCYLINDER : ${getVal('CC')}\n--------------------------------------------\n📙 DOKUMEN RESMI :\n--------------------------------------------\nNOKA : ${getVal('Noka')}\nNOSIN : ${getVal('Nosin')}\nNO. BPKB : ${getVal('BPKB')}\nNO. STNK : ${getVal('STNK')}\nTGL DAFTAR : ${getVal('Tgl')}\nAPM : ${getVal('APM')}\n--------------------------------------------\n👇LINK DAFTAR APLIKASI :\n--------------------------------------------\n📱 Hub: https://wa.me/628136900872\n--------------------------------------------\n✍ NOTE :\n--------------------------------------------\nDATA INI SEBAGAI ALAT BUKTI KEPEMILIKAN KENDARAAN YANG SAH SESUAI TNKB YANG BERLAKU ⚖️.\n___________________________________`}
+                                </div>
+                                <div className="mt-8 space-y-4 w-full">
+                                    <button type="button" onClick={() => {
+                                        const text = document.querySelector('.shimmer').innerText;
+                                        copyToClipboard(text);
+                                    }} className="w-full bg-white text-black py-5 rounded-[2rem] font-black text-lg uppercase shadow-xl active:scale-95 transition-all outline-none">SALIN DATA LAPORAN</button>
+                                    <button type="button" onClick={() => {
+                                        const text = document.querySelector('.shimmer').innerText;
+                                        shareToWhatsApp(text);
+                                    }} className="w-full bg-[#25d366] text-white py-5 rounded-[2rem] font-black text-lg uppercase shadow-xl active:scale-95 transition-all outline-none">BAGIKAN KE WHATSAPP</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Admin Screen */}
+                    {currentPage === 'admin' && (
+                        <div className="flex-1 flex flex-col h-full bg-[#050505] overflow-hidden">
+                            <header className="px-6 py-6 flex items-center justify-between border-b border-white/5 bg-black z-[100]"><button type="button" onClick={() => setCurrentPage('search')} className="p-2.5 bg-slate-900 rounded-2xl text-white outline-none"><Icons.ChevronLeft /></button><span className="text-white font-black uppercase text-xs tracking-widest">KONTROL MASTER</span>{renderStatusOverlay()}</header>
+                            <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6 pb-20 scrollbar-hide">
+                                <div className="grid grid-cols-3 gap-2">
+                                    <div className="glass-panel p-4 rounded-[1.8rem] text-center border-orange-500/10 shadow-lg"><p className="text-2xl font-black text-white font-mono-custom">{managedPins.length}</p><p className="text-[8px] font-black text-slate-500 uppercase mt-1 tracking-wider">TOTAL USER</p></div>
+                                    <div className="glass-panel p-4 rounded-[1.8rem] text-center border-emerald-500/10 shadow-lg"><p className="text-2xl font-black text-emerald-500 font-mono-custom">{managedPins.filter(p => !p.isBlocked && (p.expiry === 'UNLIMITED' || p.expiry > Date.now())).length}</p><p className="text-[8px] font-black text-emerald-500/70 uppercase mt-1 tracking-wider">PIN AKTIF</p></div>
+                                    <div className="glass-panel p-4 rounded-[1.8rem] text-center border-red-500/10 shadow-lg"><p className="text-2xl font-black text-red-500 font-mono-custom">{managedPins.filter(p => p.isBlocked || (p.expiry !== 'UNLIMITED' && p.expiry <= Date.now())).length}</p><p className="text-[8px] font-black text-red-500/70 uppercase mt-1 tracking-wider">PIN MATI</p></div>
+                                </div>
+                                <div className="glass-panel p-6 rounded-[2.5rem] border-white/5"><textarea value={broadcast} onChange={e => setBroadcast(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-2xl p-5 text-xs text-white outline-none h-24 mb-4 font-mono-custom focus:border-orange-500/30 transition-all" /><button type="button" onClick={async () => { await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_settings').doc('main').set({ text: broadcast }); showMsg("DIPERBARUI"); }} className="w-full bg-orange-600 text-white py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:bg-orange-700 outline-none">UPDATE RUNNING TEXT</button></div>
+                                <div className="flex gap-2"><input type="text" placeholder="CARI ID PIN..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="flex-1 bg-slate-900/50 border border-white/5 rounded-2xl px-6 py-5 text-xs text-white outline-none font-bold" /><button type="button" onClick={() => setShowAddPinModal(true)} className="bg-emerald-600 text-white px-6 rounded-2xl shadow-lg active:scale-95 outline-none"><Icons.Plus /></button></div>
+                                <div className="space-y-4">{managedPins.filter(p => p.id.includes(searchTerm)).map(p => {
+                                    const isUserActive = !p.isBlocked && (p.expiry === 'UNLIMITED' || p.expiry > Date.now());
+                                    return (
+                                        <div key={p.id} className="glass-panel p-6 rounded-[2.5rem] border-white/5 shadow-lg relative overflow-hidden">
+                                            <div className="flex justify-between items-start mb-2"><div><p className="text-4xl font-black text-white font-mono-custom tracking-tighter">{p.id}</p><p className={`text-[11px] font-bold uppercase mt-1 ${isUserActive ? 'text-orange-500' : 'text-red-500'}`}>EXP: {p.expiry === 'UNLIMITED' ? 'NOLIMIT' : new Date(p.expiry).toLocaleDateString()}</p><p className="text-[9px] text-slate-500 font-bold mt-1 uppercase">DEVICE: {p.deviceId ? p.deviceId.substring(0,10)+'...' : 'HP BEBAS'}</p></div><span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase ${isUserActive ? 'bg-emerald-600/20 text-emerald-500 border border-emerald-500/20' : 'bg-red-600/20 text-red-500 border border-red-500/20'}`}>{isUserActive ? 'ACTIVE' : 'INACTIVE'}</span></div>
+                                            <div className="grid grid-cols-3 gap-2 mt-6">
+                                                <button type="button" onClick={async () => { await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').doc(p.id).update({ isBlocked: !p.isBlocked }); showMsg("STATUS BLOKIR DIPERBARUI"); }} className="bg-slate-900 border border-white/5 text-white py-4 rounded-2xl text-[9px] font-black uppercase outline-none">{p.isBlocked ? 'BATAL BLOK' : 'BLOKIR'}</button>
+                                                <button type="button" onClick={() => setDurationModal(p)} className="bg-slate-900 border border-white/5 text-white py-4 rounded-2xl text-[9px] font-black uppercase outline-none">DURASI</button>
+                                                <button type="button" onClick={() => { setConfirmModal({ message: `Reset link HP PIN ${p.id}?`, onConfirm: async () => { await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').doc(p.id).update({ deviceId: null }); showMsg("RESET HP BERHASIL"); setConfirmModal(null); } }); }} className="bg-slate-900 border border-white/5 text-white py-4 rounded-2xl text-[9px] font-black uppercase text-blue-400 outline-none">RESET HW</button>
+                                            </div>
+                                            <button type="button" onClick={() => { setConfirmModal({ message: `Hapus PIN ${p.id}?`, onConfirm: async () => { await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').doc(p.id).delete(); showMsg("PIN DIHAPUS"); setConfirmModal(null); } }); }} className="w-full mt-2 bg-red-600/5 text-red-500 py-3.5 rounded-2xl text-[9px] font-black uppercase flex items-center justify-center gap-2 border border-red-600/10 font-bold outline-none">HAPUS PERMANEN</button>
+                                        </div>
+                                    );
+                                })}</div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Camera Scanner View */}
+                    {cameraActive && (
+                        <div className="absolute inset-0 bg-black z-[2000] flex flex-col overflow-hidden">
+                            <video ref={videoRef} autoPlay playsInline className="absolute inset-0 w-full h-full object-cover z-0" />
+                            <canvas ref={canvasRef} className="hidden" />
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"><div className="w-80 h-40 scan-guide rounded-3xl" /><div className="absolute top-[18%] text-center text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 bg-black/75 px-5 py-2.5 rounded-full border border-orange-500/20 shadow-lg">POSISIKAN TEKS DI DALAM KOTAK</div></div>
+                            <div className="absolute bottom-8 left-6 right-6 z-20 flex items-center justify-between gap-4 bg-black/45 backdrop-blur-md p-5 rounded-[2rem] border border-white/10 shadow-2xl"><button type="button" onClick={stopCamera} className="p-5 bg-slate-900/80 rounded-2xl text-white outline-none"><Icons.X /></button><button type="button" onClick={captureAndProcess} disabled={isScanning} className="flex-1 bg-orange-600/95 text-white py-5 rounded-2xl font-black uppercase flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl shadow-orange-600/20 outline-none">{isScanning ? <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Icons.Camera cls="w-5 h-5" />}{isScanning ? 'MENDETEKSI...' : 'AMBIL FOTO'}</button></div>
+                        </div>
+                    )}
+
+                    {/* Pin Modal */}
+                    {showPinModal && (
+                        <div className="absolute inset-0 bg-black/95 backdrop-blur-3xl z-[2000] flex items-center justify-center p-8"><div className="glass-panel w-full max-w-[340px] rounded-[4rem] border-white/10 p-12 text-center shadow-2xl"><h3 className="text-orange-500 font-black text-[12px] uppercase mb-10 tracking-[0.4em] opacity-80">MASTER ACCESS</h3><input autoFocus type="password" value={pinInput} onChange={e => setPinInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleMasterLogin()} placeholder="PIN" className="w-full bg-black/50 border-2 border-orange-600/20 rounded-3xl p-6 text-center text-5xl font-black text-white outline-none mb-10 font-mono-custom tracking-tighter shadow-inner" /><div className="flex gap-4"><button type="button" onClick={() => setShowPinModal(false)} className="flex-1 py-5 bg-slate-900 rounded-[1.5rem] font-black text-[11px] uppercase tracking-widest text-slate-400 outline-none">BATAL</button><button type="button" onClick={handleMasterLogin} className="flex-1 py-5 bg-white text-black rounded-[1.5rem] font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-95 outline-none">OTORISASI</button></div></div></div>
+                    )}
+
+                    {/* Confirm Modal */}
+                    {confirmModal && (
+                        <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-[9999] flex items-center justify-center p-6"><div className="glass-panel w-full max-w-[320px] rounded-[2.5rem] border-white/10 p-10 text-center shadow-2xl"><p className="text-white font-black text-xl mb-8 leading-tight tracking-tight">{confirmModal.message}</p><div className="flex gap-4"><button type="button" onClick={() => setConfirmModal(null)} className="flex-1 py-4 bg-slate-900 rounded-2xl font-black text-[11px] uppercase tracking-widest outline-none">BATAL</button><button type="button" onClick={confirmModal.onConfirm} className="flex-1 py-4 bg-red-600 rounded-2xl font-black text-[11px] uppercase tracking-widest text-white shadow-lg shadow-red-600/20 outline-none">YA, PROSES</button></div></div></div>
+                    )}
+
+                    {/* Add Pin Modal */}
+                    {showAddPinModal && (
+                        <div className="absolute inset-0 bg-black/90 backdrop-blur-2xl z-[1000] flex items-center justify-center p-6"><div className="glass-panel w-full max-w-[380px] rounded-[3rem] p-10 border-white/10 shadow-2xl flex flex-col"><p className="text-white font-black uppercase text-xs mb-6 text-center tracking-widest opacity-60">TAMBAH PIN BARU</p><input type="number" value={newPinInput} onChange={e => setNewPinInput(e.target.value)} placeholder="000000" className="w-full bg-black border border-white/5 rounded-3xl p-6 text-white font-black text-4xl text-center mb-6 font-mono-custom tracking-widest" /><div className="grid grid-cols-3 gap-2 mb-8 max-h-[160px] overflow-y-auto pr-1 scrollbar-hide border border-white/5 p-2 rounded-2xl bg-black/30">{durationOptions.map(opt => <button type="button" key={opt.l} onClick={() => setNewPinDuration(opt.v)} className={`py-4 rounded-xl text-[9px] font-black uppercase transition-all ${newPinDuration === opt.v ? 'bg-orange-600 text-white' : 'bg-slate-900 text-slate-500'}`}>{opt.l}</button>)}</div><div className="flex gap-3"><button type="button" onClick={() => setShowAddPinModal(false)} className="flex-1 py-5 bg-slate-900 rounded-2xl font-black text-[11px] uppercase outline-none">BATAL</button><button type="button" onClick={async () => { await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').doc(newPinInput).set({ expiry: newPinDuration === 'UNLIMITED' ? 'UNLIMITED' : Date.now() + newPinDuration, isBlocked: false, role: 'user', deviceId: null }); setShowAddPinModal(false); setNewPinInput(''); showMsg("PIN BERHASIL DIBUAT"); }} className="flex-1 py-5 bg-orange-600 rounded-2xl font-black text-[11px] uppercase shadow-lg shadow-orange-600/20 outline-none">SIMPAN PIN</button></div></div></div>
+                    )}
+
+                    {/* Duration Modal */}
+                    {durationModal && (
+                        <div className="absolute inset-0 bg-black/90 backdrop-blur-xl z-[500] flex items-center justify-center p-6"><div className="glass-panel w-full max-w-[360px] rounded-[3rem] p-10 border-white/10 shadow-2xl flex flex-col"><p className="text-white font-black uppercase text-xs mb-8 text-center tracking-[0.2em]">PERPANJANG MASA AKTIF: {durationModal.id}</p><div className="grid grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-2 scrollbar-hide">{durationOptions.map(opt => <button type="button" key={opt.l} onClick={async () => { let currentExp = (durationModal.expiry === 'UNLIMITED' || durationModal.expiry < Date.now()) ? Date.now() : durationModal.expiry; await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').doc(durationModal.id).update({ expiry: opt.v === 'UNLIMITED' ? 'UNLIMITED' : currentExp + opt.v }); setDurationModal(null); showMsg("MASA AKTIF DITAMBAH"); }} className="bg-slate-900 border border-white/5 text-white py-4 rounded-2xl text-[10px] font-black uppercase hover:bg-orange-600 transition-colors outline-none">{opt.l}</button>)}</div><button type="button" onClick={() => setDurationModal(null)} className="w-full mt-8 py-4 text-slate-500 font-black text-[11px] uppercase tracking-widest outline-none">DISMISS</button></div></div>
+                    )}
+
+                    {/* Notification Toast */}
+                    {notification && <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[9999] bg-orange-600 text-white px-12 py-5 rounded-[2rem] font-black text-[11px] shadow-[0_0_40px_rgba(249, 115, 22, 0.4)] animate-bounce uppercase border-2 border-white/20 whitespace-nowrap tracking-widest">{notification}</div>}
+                    
+                    {/* Loader */}
+                    {loading && <div className="fixed inset-0 bg-black/90 backdrop-blur-2xl z-[9000] flex items-center justify-center"><div className="flex flex-col items-center"><div className="w-20 h-20 border-[6px] border-white/5 border-t-orange-600 rounded-full turbo-spin mb-8 shadow-lg" /><p className="text-white font-black uppercase text-[10px] tracking-[0.6em] animate-pulse text-glow">Sedang Membuat Data</p></div></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
