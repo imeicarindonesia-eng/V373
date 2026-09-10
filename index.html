@@ -571,23 +571,23 @@
                         return extractField(item, ['pekerjaan', 'Pekerjaan', 'job', 'pekerjaan_pemilik']);
                     case 'Alamat': 
                         return extractField(item, ['alamat', 'Alamat', 'alamat_pemilik']);
-                    case 'NopolServer': 
-                        const w = extractField(item, ['wilayah', 'Wilayah', 'prefix', 'Prefix']).replace(/\s+/g, '').toUpperCase();
-                        const n = extractField(item, ['nopol', 'Nopol', 'no_polisi', 'noPolisi']).replace(/\s+/g, '').toUpperCase();
+                        case 'NopolServer': {
+                        const w = extractField(item, ['wilayah', 'Wilayah', 'prefix', 'Prefix', 'SeriWilayah']).replace(/\s+/g, '').toUpperCase();
+                        const n = extractField(item, ['nopol', 'Nopol', 'no_polisi', 'noPolisi', 'Nopol1']).replace(/\s+/g, '').toUpperCase();
                         const s = extractField(item, ['seri', 'Seri', 'suffix', 'Suffix']).replace(/\s+/g, '').toUpperCase();
-                        
+
+                        let hasilNopol = '';
                         if (w !== '-' && n !== '-') {
-                            return `${w}${n}${s !== '-' ? s : ''}`;
+                            hasilNopol = `${w} ${n}`;
+                            if (s !== '-') hasilNopol += ` ${s}`;
+                        } else if (n !== '-') {
+                            hasilNopol = n;
+                            if (s !== '-') hasilNopol += ` ${s}`;
+                        } else {
+                            return '(TIDAK ADA NOPOL)';
                         }
-                        
-                        const flatNopol = extractField(item, ['nopol', 'no_polisi', 'noPolisi']).replace(/\s+/g, '').toUpperCase();
-                        if (flatNopol !== '-') {
-                            if (/^\d+$/.test(flatNopol)) {
-                                return formatPlate(plate);
-                            }
-                            return flatNopol;
+                        return hasilNopol.trim().toUpperCase();
                         }
-                        return formatPlate(plate);
                     case 'Merk': 
                         return extractField(item, ['merk', 'Merk', 'Merek', 'merek', 'brand']);
                     case 'Tipe': 
