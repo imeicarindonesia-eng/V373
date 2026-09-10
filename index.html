@@ -5,21 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CSID.PRO - Sistem Terintegrasi</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Library OCR Tesseract.js -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    
-    <!-- Google Fonts JetBrains Mono & Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-    <!-- Firebase SDK v10 Compat (Mencegah Crash Modul di WebView Android) -->
     <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
-    <!-- React dan Babel Standalone -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -41,7 +34,6 @@
         .camera-video { width: 100%; height: 100%; object-fit: cover; }
         .scan-guide { border: 3px solid rgba(249, 115, 22, 0.7); box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.65); }
         @media print { body { display: none !important; } }
-        /* Turbo Spin Loader Optimization */
         .turbo-spin { animation: spin 0.45s linear infinite !important; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -56,7 +48,6 @@
         const ADMIN_WA = "628136900872";
         const APP_ID = 'csid-intelligence-pro';
         
-        // DOUBLE API KEY SAMSAT NASIONAL
         const API_UTAMA_1 = "https://priyamcookware.com/wp-admin/lopon22/lopon23.php?key=lopon23&q=";
         const API_UTAMA_2 = "http://202.155.143.156/backend/search?q=";
 
@@ -103,6 +94,17 @@
                 "IsiCylinder": "1490.000", "Warna": "ABU ABU METALIK", "JumlahSumbu": "2", "JumlahRoda": "4",
                 "NoBPKB": "F7065727G", "NoSTNK": "", "TanggalDaftar": "2012-02-06 13:31:20", "NoFaktur": "0",
                 "TanglFaktur": "0", "APM": ""
+            },
+            "BK1108DT": {
+                "wilayah": "BK", "nopol": "1108", "seri": "DT",
+                "alamat": "JL.KAPT JUMHANA GG IV NO.12 KEL. SUKARAMAI II KEC.MEDAN AREA- MEDAN",
+                "NoKTP": "1271106908890002", "NoKK": "", "NoHP": "00000000000000", "Email": "0",
+                "Pekerjaan": "WIRASWASTA", "NamaPemilik": "LIDIA NATALIA", "NoRangka": "MHKS6GJ6JHJ019566",
+                "NoMesin": "3NRH113088", "RT": "0", "RW": "0", "KodeProvinsi": "33", "KodeKel": "0",
+                "Merk": "DAIHATSU", "Type": "B401RS-GMZFJ 1.2 R M/T", "TahunPembuatan": "2017",
+                "IsiCylinder": "1197.000", "Warna": "SILVER METALIK", "JumlahSumbu": "2", "JumlahRoda": "4",
+                "NoBPKB": "M10187883", "NoSTNK": "10792668I", "TanggalDaftar": "2025-10-15 15:12:33", "NoFaktur": "0",
+                "TanglFaktur": "0", "APM": "PT. ASTRA DAIHATSU MOTOR"
             }
         };
 
@@ -121,21 +123,13 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        const formatPlate = (str) => {
-            if (!str) return '';
-            return str.replace(/\s+/g, '').toUpperCase();
-        };
-
         const Icons = {
             Shield: ({cls}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={cls || "w-6 h-6"}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>,
             Power: ({cls}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={cls || "w-6 h-6"}><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>,
             Search: ({cls}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={cls || "w-6 h-6 pointer-events-none"}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
             Camera: ({cls}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={cls || "w-6 h-6"}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>,
-            Paste: ({cls}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={cls || "w-6 h-6"}><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>,
             ChevronLeft: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><polyline points="15 18 9 12 15 6"/></svg>,
-            X: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
-            Minus: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><line x1="5" y1="12" x2="19" y2="12"/></svg>,
-            Plus: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><line x1="12" y1="5" x2="12" y1="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            X: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         };
 
         const App = () => {
@@ -153,25 +147,19 @@
             const [plate, setPlate] = useState('');
             const [broadcast, setBroadcast] = useState("SELAMAT DATANG DI CSID.PRO - VEHICLE INTELLIGENCE SYSTEM v4.0");
             const [loading, setLoading] = useState(true);
-            const [kbHeight, setKbHeight] = useState(25);
             const [searchResult, setSearchResult] = useState(null);
             const [notification, setNotification] = useState(null);
             const [managedPins, setManagedPins] = useState([]);
             const [showPinModal, setShowPinModal] = useState(false);
             const [pinInput, setPinInput] = useState('');
-            const [adminTapCount, setAdminTapCount] = useState(0);
-            const [searchTerm, setSearchTerm] = useState('');
-            const [durationModal, setDurationModal] = useState(null);
             const [showAddPinModal, setShowAddPinModal] = useState(false);
             const [newPinInput, setNewPinInput] = useState('');
             const [newPinDuration, setNewPinDuration] = useState(86400000); 
-            const [confirmModal, setConfirmModal] = useState(null); 
 
             const [cameraActive, setCameraActive] = useState(false);
             const [isScanning, setIsScanning] = useState(false);
             const videoRef = useRef(null);
             const canvasRef = useRef(null);
-            const inputRef = useRef(null);
 
             const durationOptions = [
                 {l: '1 JAM', v: 3600000},
@@ -395,8 +383,7 @@
                 }
                 
                 const findVehicleObject = (obj) => {
-                    if (!obj) return null;
-                    if (typeof obj !== 'object') return null;
+                    if (!obj || typeof obj !== 'object') return null;
                     
                     if (Array.isArray(obj)) {
                         for (let item of obj) {
@@ -429,7 +416,7 @@
                     }
                     
                     for (let k in obj) {
-                        if (obj.hasOwnProperty(k) && obj[k] && typeof obj[k] === 'object') {
+                        if (Object.prototype.hasOwnProperty.call(obj, k) && obj[k] && typeof obj[k] === 'object') {
                             const found = findVehicleObject(obj[k]);
                             if (found) return found;
                         }
@@ -468,9 +455,7 @@
                     console.warn("sessionStorage error:", e);
                 }
 
-                const isHttps = window.location.protocol === 'https:';
                 const requestPool = [];
-
                 const baseUrls = [
                     `${API_UTAMA_1}${encodeURIComponent(cleanQuery)}`,
                     `${API_UTAMA_2}${encodeURIComponent(cleanQuery)}`
@@ -571,157 +556,412 @@
                         return extractField(item, ['pekerjaan', 'Pekerjaan', 'job', 'pekerjaan_pemilik']);
                     case 'Alamat': 
                         return extractField(item, ['alamat', 'Alamat', 'alamat_pemilik']);
-                    
-                    // 👇 KODE INI YANG SUDAH DIPERBAIKI BOSKU
                     case 'NopolServer': 
-                        const w = extractField(item, ['SeriWilayah', 'wilayah', 'Wilayah', 'prefix', 'Prefix']).replace(/\s+/g, '').toUpperCase();
-                        const n = extractField(item, ['Nopol', 'nopol', 'no_polisi', 'noPolisi']).replace(/\s+/g, '').toUpperCase();
-                        const s = extractField(item, ['Seri', 'seri', 'suffix', 'Suffix']).replace(/\s+/g, '').toUpperCase();
+                        const w = extractField(item, ['wilayah', 'Wilayah', 'prefix', 'Prefix', 'SeriWilayah']).replace(/\s+/g, '').toUpperCase();
+                        const n = extractField(item, ['nopol', 'Nopol', 'no_polisi', 'noPolisi', 'Nopol1']).replace(/\s+/g, '').toUpperCase();
+                        const s = extractField(item, ['seri', 'Seri', 'suffix', 'Suffix']).replace(/\s+/g, '').toUpperCase();
                         
                         if (w !== '-' && n !== '-') {
-                            let fullPlate = w + ' ' + n;
-                            if (s !== '-') fullPlate += ' ' + s;
-                            return fullPlate;
+                            return `${w} ${n} ${s !== '-' ? s : ''}`.trim();
                         }
-                        
-                        const flatNopol = extractField(item, ['SeriWilayah', 'Nopol', 'nopol', 'no_polisi', 'noPolisi']).replace(/\s+/g, ' ').toUpperCase();
-                        if (flatNopol !== '-' && flatNopol.length > 1) {
-                            return flatNopol;
+                        if (n !== '-') {
+                            return `${n} ${s !== '-' ? s : ''}`.trim();
                         }
-                        
-                        return '(TIDAK ADA DATA)';
-                    // 👆 SELESAI DIPERBAIKI - LAINNYA TETAP SAMA
-                    
+                        return plate.toUpperCase();
                     case 'Merk': 
-                        return extractField(item, ['merk', 'Merk', 'Merek', 'merek', 'brand']);
+                        return extractField(item, ['merk', 'Merk', 'brand']);
                     case 'Tipe': 
-                        return extractField(item, ['type', 'Type', 'Tipe', 'tipe', 'model']);
+                        return extractField(item, ['type', 'Type', 'model', 'jenis']);
                     case 'Tahun': 
-                        return extractField(item, ['tahun', 'TahunPembuatan', 'Tahun', 'tahun_pembuatan', 'tahun_buat', 'th_buat']);
+                        return extractField(item, ['tahun', 'TahunPembuatan', 'tahun_pembuatan', 'thn']);
                     case 'Warna': 
-                        return extractField(item, ['warna', 'Warna', 'warna_tnkb', 'warna_kendaraan']);
-                    case 'CC': 
-                        return extractField(item, ['cylinder', 'IsiCylinder', 'Cylinder', 'isi_silinder', 'cc', 'isi_cylinder']);
-                    case 'Noka': 
-                        return extractField(item, ['no_rangka', 'NoRangka', 'noka', 'vin', 'no_frame']);
-                    case 'Nosin': 
-                        return extractField(item, ['no_mesin', 'NoMesin', 'nosin', 'no_engine']);
+                        return extractField(item, ['warna', 'Warna', 'color']);
+                    case 'Cylinder': 
+                        return extractField(item, ['cylinder', 'IsiCylinder', 'isi_cylinder', 'cc']);
+                    case 'Rangka': 
+                        return extractField(item, ['no_rangka', 'NoRangka', 'norangka']);
+                    case 'Mesin': 
+                        return extractField(item, ['no_mesin', 'NoMesin', 'nomesin']);
                     case 'BPKB': 
-                        return extractField(item, ['no_bpkb', 'NoBPKB', 'bpkb', 'no_bpkb']);
+                        return extractField(item, ['no_bpkb', 'NoBPKB', 'nobpkb']);
                     case 'STNK': 
-                        return extractField(item, ['no_stnk', 'NoSTNK', 'stnk', 'no_stnk']);
-                    case 'Tgl': 
-                        return extractField(item, ['tanggal_daftar', 'TglDaftar', 'TanggalDaftar', 'tgl_daftar', 'tglDaftar']);
+                        return extractField(item, ['no_stnk', 'NoSTNK', 'nostnk']);
+                    case 'TanggalDaftar': 
+                        return extractField(item, ['tanggal_daftar', 'TanggalDaftar', 'tgl_daftar']);
                     case 'APM': 
-                        return extractField(item, ['APM', 'apm', 'atpm', 'AgenPemegangMerek', 'agen_pemegang_merek']);
+                        return extractField(item, ['apm', 'APM']);
                     default: 
-                        return "-";
+                        return '-';
                 }
             };
 
-            const copyToClipboard = (text) => {
-                const el = document.createElement('textarea'); el.value = text; el.setAttribute('readonly', ''); el.style.position = 'fixed'; el.style.top = '0'; el.style.left = '0'; el.style.width = '2px'; el.style.height = '2px'; el.style.opacity = '0.01'; document.body.appendChild(el); el.focus(); el.select(); el.setSelectionRange(0, 99999);
-                try { if (document.execCommand('copy')) showMsg("LAPORAN DISALIN"); } catch (err) { showMsg("GAGAL SALIN"); } document.body.removeChild(el);
-            };
-
-            const shareToWhatsApp = (text) => {
-                copyToClipboard(text);
-                const webUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-                const a = document.createElement('a'); a.href = webUrl; a.target = '_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            };
-
-            const getRemainingTime = (e) => { if (e === 'UNLIMITED') return "PERMANEN"; const d = e - Date.now(); if (d <= 0) return "EXPIRED"; const days = Math.floor(d / 86400000); return days >= 1 ? `${days + 1} HARI` : `${Math.floor(d / 3600000)} JAM`; };
-
-            const renderStatusOverlay = () => (
-                <div className="text-right glass-panel px-3 py-1.5 rounded-xl border border-white/10 z-[60]">
-                    <p className="text-[10px] font-black uppercase text-orange-500">ID: {activePin}</p>
-                    <p className="text-[9px] font-black text-slate-400">SISA: {getRemainingTime(userExpiry)}</p>
-                </div>
-            );
-
-            const handleSearchPress = (e) => {
-                if (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-                fetchData();
-            };
+            if (loading && currentPage === 'welcome') {
+                return (
+                    <div className="mobile-shell flex items-center justify-center bg-black">
+                        <div className="text-center">
+                            <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full turbo-spin mx-auto mb-4"></div>
+                            <p className="text-xs font-bold tracking-widest text-orange-500">MEMUAT SISTEM...</p>
+                        </div>
+                    </div>
+                );
+            }
 
             return (
-                <div className="mobile-shell bg-black">
-                    {/* Welcome Screen */}
-                    {currentPage === 'welcome' && (
-                        <div className="flex-1 flex flex-col items-center justify-between py-12 px-8 h-full relative overflow-y-auto scrollbar-hide">
-                            <div className="absolute top-[-10%] left-[-10%] w-[80%] h-[40%] bg-orange-600/10 blur-[150px] rounded-full" />
-                            <div className="text-center z-10 mt-6 space-y-1.5">
-                                <p className="text-[15px] font-black uppercase tracking-tight text-orange-500 leading-tight">SELAMAT DATANG DI APLIKASI</p>
-                                <p className="text-[15px] font-black uppercase tracking-tight leading-tight text-white">CSID.PRO NASIONAL</p>
-                            </div>
-                            <div className="flex flex-col items-center z-10">
-                                <h1 onClick={() => { setAdminTapCount(c => c + 1); if(adminTapCount === 4) setShowPinModal(true); }} className="text-[72px] font-black text-white text-glow cursor-pointer tracking-tighter">CSID.PRO</h1>
-                                <div className="h-1 w-20 bg-orange-500 rounded-full -mt-2 animate-pulse" />
-                            </div>
-                            <div className="w-full flex flex-col items-center gap-6 mb-8 z-10">
-                                <div className="w-full max-w-[340px] glass-panel rounded-[2.5rem] py-8 px-8 text-center border-orange-500/10">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-3">ID PENDAFTARAN</p>
-                                    <p className="text-[60px] font-black text-white font-mono-custom tracking-tighter">{registrationId}</p>
+                <div className="mobile-shell select-none">
+                    <div className="h-10 px-6 flex items-center justify-between border-b border-zinc-900 bg-black/80 backdrop-blur z-20 shrink-0">
+                        <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></div>
+                            <span className="text-[10px] font-mono tracking-widest text-zinc-400 font-bold">CSID.PRO // SECURE</span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                            <span className="text-[10px] font-mono text-zinc-500 uppercase">{userRole}</span>
+                            <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="text-zinc-500 hover:text-orange-500 transition p-1">
+                                <Icons.Power cls="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+
+                    {notification && (
+                        <div className="absolute top-12 left-6 right-6 z-50 bg-orange-600 text-white text-xs font-bold py-3 px-4 rounded-xl text-center shadow-2xl tracking-wider uppercase border border-orange-400/50 animate-in fade-in slide-in-from-top duration-300">
+                            {notification}
+                        </div>
+                    )}
+
+                    {cameraActive && (
+                        <div className="absolute inset-0 z-50 bg-black flex flex-col">
+                            <div className="relative flex-1 bg-zinc-900 overflow-hidden flex items-center justify-center">
+                                <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
+                                <div className="absolute inset-0 scan-guide flex flex-col items-center justify-center pointer-events-none">
+                                    <div className="w-72 h-36 border-2 border-orange-500 rounded-2xl relative flex items-center justify-center overflow-hidden bg-orange-500/5">
+                                        <div className="absolute inset-x-0 h-0.5 bg-orange-500 animate-pulse top-1/2"></div>
+                                        <span className="text-[10px] font-mono text-orange-400 uppercase tracking-widest bg-black/60 px-2 py-1 rounded">POSISIKAN PLAT NOMOR</span>
+                                    </div>
                                 </div>
-                                <div className="w-full space-y-4 max-w-[340px]">
-                                    <button type="button" onClick={handleLoginOnline} className="w-full bg-white text-black py-5 rounded-2xl font-black text-lg uppercase shadow-lg active:scale-95 flex items-center justify-center gap-3"><Icons.Shield cls="w-5 h-5" /> MASUK SISTEM</button>
-                                    <button type="button" onClick={() => window.open(`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent('Aktivasi ID: '+registrationId)}`)} className="w-full bg-[#108a6e] text-white py-5 rounded-2xl font-black text-lg uppercase shadow-lg active:scale-95 flex items-center justify-center gap-3">DAFTAR ADMIN</button>
+                                <button onClick={stopCamera} className="absolute top-6 right-6 w-10 h-10 bg-black/80 rounded-full flex items-center justify-center text-white border border-zinc-700">
+                                    <Icons.X />
+                                </button>
+                            </div>
+                            <div className="p-6 bg-black flex items-center justify-center">
+                                <button onClick={captureAndProcess} disabled={isScanning} className="w-full py-4 bg-orange-600 hover:bg-orange-500 transition rounded-2xl font-bold uppercase text-white tracking-widest flex items-center justify-center shadow-lg">
+                                    {isScanning ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full turbo-spin"></div> : 'AMBIL & PINDAI OCR'}
+                                </button>
+                            </div>
+                            <canvas ref={canvasRef} className="hidden" />
+                        </div>
+                    )}
+
+                    {/* STREAMING_CHUNK:Rendering welcome and authentication view... -->
+                    {currentPage === 'welcome' && (
+                        <div className="flex-1 flex flex-col justify-between p-6 overflow-y-auto">
+                            <div className="pt-8 text-center">
+                                <div className="w-16 h-16 bg-orange-500/10 border border-orange-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4 text-orange-500 shadow-[0_0_30px_rgba(249,115,22,0.2)]">
+                                    <Icons.Shield cls="w-8 h-8" />
+                                </div>
+                                <h1 className="text-2xl font-black text-white tracking-wider uppercase mb-1">CSID<span className="text-orange-500">.PRO</span></h1>
+                                <p className="text-[11px] text-zinc-400 font-mono tracking-widest uppercase">Vehicle Intelligence System v4.0</p>
+                            </div>
+
+                            <div className="space-y-4 my-auto">
+                                <div className="glass-panel p-5 rounded-2xl space-y-3">
+                                    <label className="text-[10px] font-mono text-zinc-400 tracking-wider block uppercase">ID REGISTRASI PERANGKAT</label>
+                                    <div className="w-full p-4 bg-black/60 border border-zinc-800 rounded-xl text-center font-mono-custom text-xl text-orange-400 font-bold tracking-widest">
+                                        {registrationId}
+                                    </div>
+                                    <p className="text-[10px] text-zinc-500 text-center leading-relaxed">
+                                        Berikan ID Registrasi ini kepada Admin untuk mengaktifkan akses sistem Anda.
+                                    </p>
+                                </div>
+
+                                <button onClick={handleLoginOnline} disabled={loading} className="w-full py-4 bg-orange-600 hover:bg-orange-500 active:scale-95 transition rounded-xl font-bold uppercase text-white tracking-wider flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.4)]">
+                                    {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full turbo-spin"></div> : 'MASUK / CEK AKTIVASI'}
+                                </button>
+
+                                <a href={`https://wa.me/${ADMIN_WA}?text=Halo%20Admin,%20saya%20ingin%20mengaktifkan%20akun%20CSID.PRO%20dengan%20ID:%20${registrationId}`} target="_blank" rel="noreferrer" className="w-full py-4 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 transition rounded-xl font-bold uppercase text-zinc-300 tracking-wider flex items-center justify-center text-xs">
+                                    HUBUNGI ADMIN WHATSAPP
+                                </a>
+                            </div>
+
+                            <div className="text-center pb-4">
+                                <button onClick={() => { setShowPinModal(true); }} className="text-[10px] font-mono text-zinc-600 hover:text-zinc-400 transition tracking-widest uppercase">
+                                    LOGIN MASTER ADMIN
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STREAMING_CHUNK:Rendering main vehicle search view... -->
+                    {currentPage === 'search' && (
+                        <div className="flex-1 flex flex-col justify-between p-6 overflow-y-auto">
+                            <div>
+                                <div className="flex items-center justify-between mb-6">
+                                    <div>
+                                        <h1 className="text-xl font-black text-white tracking-wider uppercase">PENCARIAN TNKB</h1>
+                                        <p className="text-[10px] text-zinc-500 font-mono tracking-widest uppercase">Samsat Nasional Terintegrasi</p>
+                                    </div>
+                                    {userRole === 'master' && (
+                                        <button onClick={() => setCurrentPage('admin')} className="px-3 py-1.5 bg-orange-500/10 border border-orange-500/30 text-orange-500 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-orange-500/20 transition">
+                                            PANEL ADMIN
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="relative">
+                                        <label className="text-[10px] font-mono text-zinc-400 tracking-wider block mb-1 uppercase">NOMOR POLISI KENDARAAN</label>
+                                        <div className="flex space-x-2">
+                                            <input 
+                                                type="text" 
+                                                value={plate}
+                                                onChange={(e) => setPlate(e.target.value.toUpperCase())}
+                                                placeholder="CONTOH: BK 1108 DT"
+                                                className="flex-1 p-4 bg-zinc-900 border border-zinc-800 rounded-xl text-white font-mono-custom font-bold text-lg uppercase focus:outline-none focus:border-orange-500 tracking-wider"
+                                            />
+                                            <button onClick={startCamera} className="w-14 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl flex items-center justify-center text-orange-500 transition">
+                                                <Icons.Camera />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <button onClick={fetchData} disabled={loading} className="w-full py-4 bg-orange-600 hover:bg-orange-500 active:scale-95 transition rounded-xl font-bold uppercase text-white tracking-widest flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.4)]">
+                                        {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full turbo-spin"></div> : 'CARI DATA KENDARAAN'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="glass-panel py-2 px-4 rounded-xl overflow-hidden mt-6">
+                                <div className="flex items-center space-x-2">
+                                    <span className="w-2 h-2 rounded-full bg-orange-500 shrink-0"></span>
+                                    <div className="overflow-hidden whitespace-nowrap w-full">
+                                        <p className="text-[10px] font-mono text-zinc-400 uppercase animate-marquee">{broadcast}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Search Screen */}
-                    {currentPage === 'search' && (
-                        <div className="flex-1 flex flex-col h-full bg-black">
-                            <header className="px-6 py-5 flex items-center justify-between border-b border-white/5 bg-black/80 backdrop-blur-md z-50">
-                                <div className="flex items-center gap-3 text-white">
-                                    <div className="bg-orange-600 p-1.5 rounded-lg shadow-[0_0_15px_rgba(249,115,22,0.4)]"><Icons.Shield cls="w-5 h-5 text-white" /></div>
-                                    <span className="font-black text-2xl tracking-tighter">AKUN AKTIF</span>
-                                </div>
-                                {renderStatusOverlay()}
-                            </header>
-                            <div className="h-10 bg-black/50 overflow-hidden flex items-center border-y border-orange-500/10">
-                                <div className="animate-marquee px-4 text-[10px] font-black uppercase tracking-widest text-slate-400">{broadcast}</div>
+                    {/* STREAMING_CHUNK:Rendering search result detail view... -->
+                    {currentPage === 'result' && (
+                        <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+                            <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-900">
+                                <button onClick={() => setCurrentPage('search')} className="flex items-center space-x-1 text-zinc-400 hover:text-white transition text-xs font-bold uppercase tracking-wider">
+                                    <Icons.ChevronLeft />
+                                    <span>KEMBALI</span>
+                                </button>
+                                <span className="text-[10px] font-mono text-orange-500 bg-orange-500/10 border border-orange-500/30 px-2.5 py-1 rounded-md uppercase font-bold">HASIL VALID</span>
                             </div>
-                            <main className="flex-1 flex flex-col px-4 pb-6 relative overflow-hidden">
-                                <div className="w-full h-24 border-2 border-orange-600/30 rounded-3xl bg-orange-600/5 flex items-center justify-center px-8 mb-4 mt-6">
+
+                            <div className="space-y-4 pb-6">
+                                <div className="glass-panel p-5 rounded-2xl space-y-4">
+                                    <div className="border-b border-zinc-800 pb-3">
+                                        <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">PEMILIK KENDARAAN</span>
+                                        <h2 className="text-lg font-black text-white tracking-wider mt-0.5">{getVal('Nama')}</h2>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3 font-mono">
+                                        <div className="bg-black/40 p-3 rounded-xl border border-zinc-800/80">
+                                            <span className="text-[9px] text-zinc-500 uppercase block mb-0.5">NOMOR POLISI</span>
+                                            <span className="text-xs font-bold text-orange-400">{getVal('NopolServer')}</span>
+                                        </div>
+                                        <div className="bg-black/40 p-3 rounded-xl border border-zinc-800/80">
+                                            <span className="text-[9px] text-zinc-500 uppercase block mb-0.5">NIK KTP</span>
+                                            <span className="text-xs font-bold text-white">{getVal('NIK')}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-black/40 p-3 rounded-xl border border-zinc-800/80 font-mono">
+                                        <span className="text-[9px] text-zinc-500 uppercase block mb-0.5">ALAMAT LENGKAP</span>
+                                        <span className="text-xs font-bold text-white leading-relaxed">{getVal('Alamat')}</span>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3 font-mono">
+                                        <div className="bg-black/40 p-3 rounded-xl border border-zinc-800/80">
+                                            <span className="text-[9px] text-zinc-500 uppercase block mb-0.5">NO HP</span>
+                                            <span className="text-xs font-bold text-white">{getVal('HP')}</span>
+                                        </div>
+                                        <div className="bg-black/40 p-3 rounded-xl border border-zinc-800/80">
+                                            <span className="text-[9px] text-zinc-500 uppercase block mb-0.5">PEKERJAAN</span>
+                                            <span className="text-xs font-bold text-white">{getVal('Pekerjaan')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="glass-panel p-5 rounded-2xl space-y-4">
+                                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block border-b border-zinc-800 pb-2">SPESIFIKASI KENDARAAN</span>
+                                    
+                                    <div className="grid grid-cols-2 gap-3 font-mono text-xs">
+                                        <div><span className="text-zinc-500 block text-[9px] uppercase">MERK</span> <strong className="text-white">{getVal('Merk')}</strong></div>
+                                        <div><span className="text-zinc-500 block text-[9px] uppercase">TIPE</span> <strong className="text-white">{getVal('Tipe')}</strong></div>
+                                        <div><span className="text-zinc-500 block text-[9px] uppercase">TAHUN</span> <strong className="text-white">{getVal('Tahun')}</strong></div>
+                                        <div><span className="text-zinc-500 block text-[9px] uppercase">WARNA</span> <strong className="text-white">{getVal('Warna')}</strong></div>
+                                        <div><span className="text-zinc-500 block text-[9px] uppercase">ISI CYLINDER</span> <strong className="text-white">{getVal('Cylinder')}</strong></div>
+                                        <div><span className="text-zinc-500 block text-[9px] uppercase">APM</span> <strong className="text-white">{getVal('APM')}</strong></div>
+                                    </div>
+
+                                    <div className="space-y-2 pt-2 border-t border-zinc-800 font-mono text-xs">
+                                        <div><span className="text-zinc-500 block text-[9px] uppercase">NO RANGKA</span> <span className="text-white font-bold">{getVal('Rangka')}</span></div>
+                                        <div><span className="text-zinc-500 block text-[9px] uppercase">NO MESIN</span> <span className="text-white font-bold">{getVal('Mesin')}</span></div>
+                                        <div><span className="text-zinc-500 block text-[9px] uppercase">NO BPKB</span> <span className="text-white font-bold">{getVal('BPKB')}</span></div>
+                                        <div><span className="text-zinc-500 block text-[9px] uppercase">NO STNK</span> <span className="text-white font-bold">{getVal('STNK')}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STREAMING_CHUNK:Rendering master admin control panel... -->
+                    {currentPage === 'admin' && userRole === 'master' && (
+                        <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+                            <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-900">
+                                <button onClick={() => setCurrentPage('search')} className="flex items-center space-x-1 text-zinc-400 hover:text-white transition text-xs font-bold uppercase tracking-wider">
+                                    <Icons.ChevronLeft />
+                                    <span>KEMBALI</span>
+                                </button>
+                                <span className="text-[10px] font-mono text-orange-500 bg-orange-500/10 border border-orange-500/30 px-2.5 py-1 rounded-md uppercase font-bold">MASTER PANEL</span>
+                            </div>
+
+                            <div className="space-y-4 pb-6">
+                                <div className="glass-panel p-4 rounded-2xl space-y-3">
+                                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block">BROADCAST TICKER GLOBAL</span>
                                     <input 
-                                        ref={inputRef} 
                                         type="text" 
-                                        inputMode="none" 
-                                        value={plate} 
-                                        onChange={(e) => setPlate(e.target.value.toUpperCase())} 
-                                        className={`bg-transparent w-full text-center font-black uppercase ${plate.length > 10 ? 'text-2xl' : 'text-5xl'} text-white tracking-tighter outline-none border-none`}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-                                                fetchData();
-                                            }
-                                        }}
+                                        value={broadcast}
+                                        onChange={(e) => setBroadcast(e.target.value)}
+                                        className="w-full p-3 bg-black/60 border border-zinc-800 rounded-xl text-white font-mono text-xs focus:outline-none focus:border-orange-500"
+                                    />
+                                    <button onClick={async () => {
+                                        try {
+                                            await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_settings').doc('main').set({ text: broadcast });
+                                            showMsg("BROADCAST DIPERBARUI");
+                                        } catch(e) { showMsg("GAGAL UPDATE BROADCAST"); }
+                                    }} className="w-full py-3 bg-orange-600 hover:bg-orange-500 transition rounded-xl font-bold uppercase text-white text-xs tracking-wider">
+                                        SIMPAN BROADCAST
+                                    </button>
+                                </div>
+
+                                <div className="glass-panel p-4 rounded-2xl space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">KELOLA PIN & USER ({managedPins.length})</span>
+                                        <button onClick={() => setShowAddPinModal(true)} className="px-3 py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest transition">
+                                            + TAMBAH PIN
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                                        {managedPins.map((item) => {
+                                            const isExpired = item.expiry !== 'UNLIMITED' && Date.now() > item.expiry;
+                                            return (
+                                                <div key={item.id} className="bg-black/60 p-3 rounded-xl border border-zinc-800 flex items-center justify-between font-mono text-xs">
+                                                    <div>
+                                                        <div className="flex items-center space-x-2">
+                                                            <strong className="text-orange-400">{item.id}</strong>
+                                                            <span className={`text-[9px] px-1.5 py-0.5 rounded uppercase font-bold ${item.isBlocked ? 'bg-red-950 text-red-400' : isExpired ? 'bg-yellow-950 text-yellow-400' : 'bg-green-950 text-green-400'}`}>
+                                                                {item.isBlocked ? 'BLOKIR' : isExpired ? 'EXPIRED' : 'AKTIF'}
+                                                            </span>
+                                                        </div>
+                                                        <span className="text-[10px] text-zinc-500 block mt-1">
+                                                            Role: {item.role || 'user'} | Exp: {item.expiry === 'UNLIMITED' ? 'Permanen' : new Date(item.expiry).toLocaleDateString()}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center space-x-1.5">
+                                                        <button onClick={async () => {
+                                                            const newStatus = !item.isBlocked;
+                                                            await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').doc(item.id).set({ isBlocked: newStatus }, { merge: true });
+                                                        }} className={`p-2 rounded-lg text-[10px] font-bold uppercase transition ${item.isBlocked ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+                                                            {item.isBlocked ? 'BUKA' : 'BLOK'}
+                                                        </button>
+                                                        <button onClick={async () => {
+                                                            await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').doc(item.id).delete();
+                                                        }} className="p-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-[10px]">
+                                                            <Icons.X />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STREAMING_CHUNK:Rendering dialog modals... -->
+                    {showPinModal && (
+                        <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
+                            <div className="glass-panel p-6 rounded-3xl w-full max-w-sm space-y-4 border border-zinc-800">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-sm font-black text-white uppercase tracking-wider">LOGIN MASTER ADMIN</h3>
+                                    <button onClick={() => setShowPinModal(false)} className="text-zinc-500 hover:text-white"><Icons.X /></button>
+                                </div>
+                                <input 
+                                    type="password" 
+                                    value={pinInput}
+                                    onChange={(e) => setPinInput(e.target.value)}
+                                    placeholder="MASUKKAN PIN MASTER"
+                                    className="w-full p-4 bg-black border border-zinc-800 rounded-xl text-white font-mono text-center tracking-widest text-lg focus:outline-none focus:border-orange-500"
+                                />
+                                <button onClick={handleMasterLogin} className="w-full py-4 bg-orange-600 hover:bg-orange-500 transition rounded-xl font-bold uppercase text-white tracking-widest text-xs">
+                                    AUTENTIKASI
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {showAddPinModal && (
+                        <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
+                            <div className="glass-panel p-6 rounded-3xl w-full max-w-sm space-y-4 border border-zinc-800 font-mono">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-sm font-black text-white uppercase tracking-wider">TAMBAH PIN / USER</h3>
+                                    <button onClick={() => setShowAddPinModal(false)} className="text-zinc-500 hover:text-white"><Icons.X /></button>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] text-zinc-500 block mb-1 uppercase">ID PIN / REGISTRASI (6 DIGIT)</label>
+                                    <input 
+                                        type="text" 
+                                        value={newPinInput}
+                                        onChange={(e) => setNewPinInput(e.target.value)}
+                                        placeholder="CONTOH: 123456"
+                                        className="w-full p-3 bg-black border border-zinc-800 rounded-xl text-white text-center tracking-widest font-bold focus:outline-none focus:border-orange-500 text-sm"
                                     />
                                 </div>
-
-                                {/* Banner Restricted Access Asli */}
-                                <div className="w-full text-center py-2.5 px-4 mb-2 border border-red-900/30 rounded-2xl bg-red-950/10">
-                                    <p className="text-orange-500 font-black text-xs tracking-widest flex items-center justify-center gap-1.5">
-                                        📶 AKSES DATA TNKB NOLIMIT
-                                    </p>
-                                    <p className="text-[9px] font-black text-slate-400 tracking-wider mt-0.5">
-                                        DILARANG KERAS MENYALAH GUNAKAN SISTEM APLIKASI INI
-                                    </p>
-                                    <p className="text-[8px] font-bold text-slate-600 tracking-wider">
-                                        HAK CIPTA CSID.PRO DIGITAL INTELLIGENCE SYSTEM
-                                    </p>
+                                <div>
+                                    <label className="text-[10px] text-zinc-500 block mb-1 uppercase">DURASI AKTIF</label>
+                                    <select 
+                                        value={newPinDuration}
+                                        onChange={(e) => setNewPinDuration(e.target.value === 'UNLIMITED' ? 'UNLIMITED' : Number(e.target.value))}
+                                        className="w-full p-3 bg-black border border-zinc-800 rounded-xl text-white text-xs focus:outline-none focus:border-orange-500"
+                                    >
+                                        {durationOptions.map((opt, i) => (
+                                            <option key={i} value={opt.v}>{opt.l}</option>
+                                        ))}
+                                    </select>
                                 </div>
+                                <button onClick={async () => {
+                                    if (!newPinInput.trim()) { showMsg("MASUKKAN ID PIN"); return; }
+                                    const expiryTime = newPinDuration === 'UNLIMITED' ? 'UNLIMITED' : Date.now() + Number(newPinDuration);
+                                    try {
+                                        await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('csid_pro_pins').doc(newPinInput.trim()).set({
+                                            role: 'user',
+                                            expiry: expiryTime,
+                                            isBlocked: false,
+                                            deviceId: null,
+                                            createdAt: Date.now()
+                                        });
+                                        showMsg("PIN BERHASIL DITAMBAHKAN");
+                                        setShowAddPinModal(false);
+                                        setNewPinInput('');
+                                    } catch(e) { showMsg("GAGAL MENAMBAHKAN PIN"); }
+                                }} className="w-full py-4 bg-orange-600 hover:bg-orange-500 transition rounded-xl font-bold uppercase text-white tracking-widest text-xs">
+                                    SIMPAN & AKTIFKAN
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
 
-                                <div className="mt-auto space-y-1">
-                                    {/* Action & Control Buttons Row (Pitch Black Style) */}
-                                    <div className={`grid ${userRole === 'master' ? 'grid-cols-7' : 'grid-cols-6'} gap-[2px]`}>
-                                        <button type="button" onClick={() => setKbHeight(h => Math.max(15, h-2))} className="bg-black h-14 rounded-none key-press-effect flex items-center justify-center text-slate-400 border border-white/5 font-black text-xl outline-none"><Icons.Minus /></button>
-                                        <button type="button" onClick={() => setKbHeight(h => Math.min(35, h+2))} className="bg-black h-14 rounded-none key-press-effect flex items-center justify-center text-slate-400 border border-white/5 font-black text-xl outline-none"><Icons.Plus /></button>
-                                        <button type="button" onClick={startCamera} className="bg-black h-14 rounded-none key-press-effect flex items-center justify-center text-slate-400 border border-white/5 outline-none"><Icons.Camera /></button>
-                                        <button type="button" onClick={async () => { try { const t = await navigator.clipboard.readText(); setPlate(t.toUpperCase().replace(/\s/g, '')); } catch(e){} }} className="bg-black h-14 rounded-none key-press-effect flex items-center justify-center text
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
