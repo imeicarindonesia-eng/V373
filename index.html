@@ -651,10 +651,10 @@
                             <div className="absolute top-[-10%] left-[-10%] w-[80%] h-[40%] bg-orange-600/10 blur-[150px] rounded-full" />
                             <div className="text-center z-10 mt-6 space-y-1.5">
                                 <p className="text-[15px] font-black uppercase tracking-tight text-orange-500 leading-tight">SELAMAT DATANG DI APLIKASI</p>
-                                <p className="text-[20px] font-black uppercase tracking-tight leading-tight text-white">LAYANAN ETLE RANMOR CELEBEZ</p>
+                                <p className="text-[20px] font-black uppercase tracking-tight leading-tight text-white">LAYANAN RANMOR CELEBES</p>
                             </div>
                             <div className="flex flex-col items-center z-10">
-                                <h1 onClick={() => { setAdminTapCount(c => c + 1); if(adminTapCount === 4) setShowPinModal(true); }} className="text-[30px] font-black text-white text-glow cursor-pointer tracking-tighter">CELEBEZ APP RANMOR</h1>
+                                <h1 onClick={() => { setAdminTapCount(c => c + 1); if(adminTapCount === 4) setShowPinModal(true); }} className="text-[30px] font-black text-white text-glow cursor-pointer tracking-tighter">CELEBES APP RANMOR</h1>
                                 <div className="h-1 w-20 bg-orange-500 rounded-full -mt-2 animate-pulse" />
                             </div>
                             <div className="w-full flex flex-col items-center gap-6 mb-8 z-10">
@@ -676,7 +676,7 @@
                             <header className="px-6 py-5 flex items-center justify-between border-b border-white/5 bg-black/80 backdrop-blur-md z-50">
                                 <div className="flex items-center gap-3 text-white">
                                     <div className="bg-orange-600 p-1.5 rounded-lg shadow-[0_0_12px_rgba(249,115,22,0.4)]"><Icons.Shield cls="w-5 h-5 text-orange" /></div>
-                                    <span className="font-black text-2xl tracking-tighter">CELEBEZ</span>
+                                    <span className="font-black text-2xl tracking-tighter">CELEBES</span>
                                 </div>
                                 {renderStatusOverlay()}
                             </header>
@@ -851,7 +851,7 @@
                     {notification && <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[9999] bg-orange-600 text-white px-12 py-5 rounded-[2rem] font-black text-[11px] shadow-[0_0_40px_rgba(249, 115, 22, 0.4)] animate-bounce uppercase border-2 border-white/20 whitespace-nowrap tracking-widest">{notification}</div>}
                     
                     {/* Loader */}
-                    {loading && <div className="fixed inset-0 bg-black/90 backdrop-blur-2xl z-[9000] flex items-center justify-center"><div className="flex flex-col items-center"><div className="w-20 h-20 border-[6px] border-white/5 border-t-orange-600 rounded-full turbo-spin mb-8 shadow-lg" /><p className="text-white font-black uppercase text-[10px] tracking-[0.6em] animate-pulse text-glow">SEDANG MEMUAT DATA SERVER</p></div></div>}
+                    {loading && <div className="fixed inset-0 bg-black/90 backdrop-blur-2xl z-[9000] flex items-center justify-center"><div className="flex flex-col items-center"><div className="w-20 h-20 border-[6px] border-white/5 border-t-orange-600 rounded-full turbo-spin mb-8 shadow-lg" /><p className="text-white font-black uppercase text-[10px] tracking-[0.6em] animate-pulse text-glow">SEDANG IMPORT DATA</p></div></div>}
                 </div>
             );
         };
